@@ -103,14 +103,17 @@ question answering applications
         + evidence retrieved via Google
 
 ------
-* **NarativeQA** ([Kocisky et al., 2017](https://arxiv.org/pdf/1712.07040.pdf))
+* NarativeQA ([Kocisky et al., 2017](https://arxiv.org/pdf/1712.07040.pdf))
     - Description:
         - 46k question-answer pairs with supporting snippets
         - (question, answer, short snippet/summary, long snippet)
         - 1,572 stories based on book, movie scripts, wikipedia articles
         - some human generated summaries
+        - dev:3k; test:10k; train:32k
     - Websites:
         - [Github repo](https://github.com/deepmind/narrativeqa)
+    - Side notes:
+        - The Q,A pairs heavily depend on given snippets, not so well suited for open domain QA
 
 ------
 * **SQuAD2.0** ([Rajpurkar et al., 2018](https://arxiv.org/pdf/1806.03822.pdf))
