@@ -8,9 +8,7 @@ To pare the original data, you need to download it first (see README)
 and put it in the same directory as this script, rename it to e.g. "original"
 """
 
-from tqdm import tqdm
 from os.path import join
-import json
 import ijson
 import sys
 sys.path.insert(1, join('..', '..', 'common'))

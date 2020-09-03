@@ -62,8 +62,10 @@ The datasets marked as bold are considered good candidates for open QA.
 * **TriviaQA** ([Joshi et al., 2017](https://arxiv.org/pdf/1705.03551.pdf))
     - Description:
         - 650k (question, answer, evidence) triples
+            + remark: each question has a standard answer as well as alternative/alias answers
             + dev: 200k QA pairs, 11k unique questions
             + train: 1500k QA pairs, 87k unique questions
+            + test: test set answers are not shared
         - factoid questions from quiz-league website
         - evidence from Wikipedia articles, web domain
     - SOTA:
@@ -77,6 +79,7 @@ The datasets marked as bold are considered good candidates for open QA.
 * **Quasar-T** ([Dhingra et al., 2017](https://arxiv.org/pdf/1707.03904.pdf))
     - Description:
         - 43k factoid/trivia question-answer pairs
+            + dev: 3k; test: 3k; train: 37k
         - each question is accompanied with both long and short contexts
     - Websites:
         - [Github repo](https://github.com/bdhingra/quasar)
