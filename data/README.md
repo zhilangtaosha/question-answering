@@ -120,6 +120,7 @@ question answering applications
     - Description:
         - 100k (q,a) pairs in SQuAD1.1 + 50k unanswerable questions
         - each answerable question is accompanied with a Wikipedia article
+        - dev:20k; train:86k
     - Websites:
         - [official site](https://rajpurkar.github.io/SQuAD-explorer/)
     - SOTA:
