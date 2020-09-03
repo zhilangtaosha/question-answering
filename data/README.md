@@ -91,7 +91,8 @@ The datasets marked as bold are considered good candidates for open QA.
 * **SearchQA** ([Dunn et al., 2017](https://arxiv.org/pdf/1704.05179.pdf))
     - Description:
         - 140k Jeopardy! question-answer pairs
-        - each pair has about 50 snippets as evidence
+        - each pair has on average 50 snippets as evidence
+        - dev: 21k;test: 43k; train:151k
     - Websites:
         - [Github repo](https://github.com/nyu-dl/dl4ir-searchQA)
     - Side notes:
