@@ -4,7 +4,7 @@ into a format that we can conveniently use
 for our open domain QA experiments.
 The output format is in JSON
 
-To pare the original data, you need to download it first (see README)
+To parse the original data, you need to download it first (see README)
 and put it in the same directory as this script, rename it to e.g. "original"
 
 Note that only the questions with answers are extracted.
