@@ -42,17 +42,17 @@ def parse(input_filename):
 
         print(f'Finished processing {input_filename}')
         with open('narrativeQA-test.json', 'w', encoding='utf8') as out:
-            json.dump(test_items, out)
+            json.dump(test_items, out, ensure_ascii=False)
             print('Test:')
             print(f'Number of QA pairs: {len(test_items)*2}')
             print(f'Number of unique questions: {len(test_items)}')
         with open('narrativeQA-train.json', 'w', encoding='utf8') as out:
-            json.dump(train_items, out)
+            json.dump(train_items, out, ensure_ascii=False)
             print('Train:')
             print(f'Number of QA pairs: {len(train_items) * 2}')
             print(f'Number of unique questions: {len(train_items)}')
         with open('narrativeQA-dev.json', 'w', encoding='utf8') as out:
-            json.dump(dev_items, out)
+            json.dump(dev_items, out, ensure_ascii=False)
             print('Dev:')
             print(f'Number of QA pairs: {len(dev_items) * 2}')
             print(f'Number of unique questions: {len(dev_items)}')

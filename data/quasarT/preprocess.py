@@ -30,7 +30,7 @@ def parse(input_filename, output_filename):
             items.append(item.json())
 
         with open(output_filename, 'w', encoding='utf8') as out:
-            json.dump(items, out)
+            json.dump(items, out, ensure_ascii=False)
         print('---------------------------------------')
         print(f'Finished processing {input_filename}')
         print(f'Number of QA pairs: {len(items)}')

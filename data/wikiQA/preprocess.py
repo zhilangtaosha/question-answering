@@ -41,7 +41,7 @@ def parse(input_filename, output_filename):
         for qid in qa_dict:
             qas.append(qa_dict[qid].json())
         with open(output_filename, 'w', encoding='utf8') as out:
-            json.dump(qas, out)
+            json.dump(qas, out, ensure_ascii=False)
         print('---------------------------------------')
         print(f'Finished processing {input_filename}')
         print(f'Number of QA pairs: {count}')

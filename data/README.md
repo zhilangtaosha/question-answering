@@ -135,6 +135,7 @@ question answering applications
 * **Natural Questions** ([Kwiatkowski et al., 2019](https://www.mitpressjournals.org/doi/full/10.1162/tacl_a_00276))
     - Description:
         - questions from web queries
+            + dev: 8k questions
         - each question is accompanied by a Wikipedia article that contains the answer
         - answer forms:
             1. unanswerable
