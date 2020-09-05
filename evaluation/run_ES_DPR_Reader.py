@@ -1,10 +1,10 @@
 import os, sys, time
 import numpy as np
 from tqdm import tqdm
+sys.path.insert(1, os.path.join('..', 'common'))
 from item_qa import ItemQA
 from utils import *
 from params import *
-sys.path.insert(1, os.path.join('..', 'common'))
 
 
 def get_output_filename(reader_path, data_path):
@@ -75,8 +75,8 @@ def main():
                         time_qas.append(time_diff)
                         count += 1
                     save_json(output_qas, output_filename)
-            except Exception as e:
-                logger.error(e)
+            except (Exception, KeyboardInterrupt) as e:
+                logger.info(e)
                 logger.info(f'An error occurred at Count {count}, saving what we have now...')
                 save_json(output_qas, output_filename)
 
