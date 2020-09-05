@@ -1,6 +1,7 @@
 import json
 import faiss
 import logging
+logging.disable(logging.WARNING)
 from haystack.database.elasticsearch import ElasticsearchDocumentStore
 from haystack.retriever.sparse import ElasticsearchRetriever
 from haystack.retriever.dense import DensePassageRetriever
