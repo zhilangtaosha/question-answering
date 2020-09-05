@@ -45,27 +45,27 @@ def main():
     logger.info(f'FAISS_INDEX_DIMENSION = {FAISS_INDEX_DIMENSION}')
     logger.info(f'USE_GPU = {USE_GPU}')
     logger.info('----------------------------')
-    try:
-        logger.info(f'connecting to ElasticSearch {ES_HOST}:{ES_PORT}@{ES_INDEX_NAME}...')
-        document_store = get_elastic_search_document_store(ES_HOST, ES_PORT, ES_INDEX_NAME)
-        logger.info('loading ES retriever...')
-        retriever_es = get_elastic_search_retriever(document_store)
-        logger.info('loading DPR retriever...')
-        retriever_dpr = get_dense_passage_retriever(document_store=document_store,
-                                                    dpr_model_path=DPR_MODEL_PATH,
-                                                    use_gpu=USE_GPU, batch_size=16, do_lower_case=True)
-        for reader_path in READERS:
-            logger.info(f'loading reader at {reader_path} ...')
-            reader = get_neural_reader(reader_path, use_gpu=USE_GPU)
-            for data_path in DATASETS:
-                output_filename = get_output_filename(reader_path, data_path)
-                logger.info(f'output filename: {output_filename}')
+    logger.info(f'connecting to ElasticSearch {ES_HOST}:{ES_PORT}@{ES_INDEX_NAME}...')
+    document_store = get_elastic_search_document_store(ES_HOST, ES_PORT, ES_INDEX_NAME)
+    logger.info('loading ES retriever...')
+    retriever_es = get_elastic_search_retriever(document_store)
+    logger.info('loading DPR retriever...')
+    retriever_dpr = get_dense_passage_retriever(document_store=document_store,
+                                                dpr_model_path=DPR_MODEL_PATH,
+                                                use_gpu=USE_GPU, batch_size=16, do_lower_case=True)
+    for reader_path in READERS:
+        logger.info(f'loading reader at {reader_path} ...')
+        reader = get_neural_reader(reader_path, use_gpu=USE_GPU)
+        for data_path in DATASETS:
+            output_filename = get_output_filename(reader_path, data_path)
+            logger.info(f'output filename: {output_filename}')
+            output_qas = []
+            time_qas = []
+            count = 0
+            try:
                 with open(data_path, 'r', encoding='utf8') as f:
-                    output_qas = []
-                    time_qas = []
                     data = json.load(f)
                     logger.info(f'{len(data)} QA entries loaded')
-                    count = 0
                     for qa in tqdm(data):
                         question = qa['question']
                         answer, time_diff = predict_answer(question, retriever_es, retriever_dpr, reader, USE_GPU)
@@ -74,15 +74,17 @@ def main():
                         output_qas.append(item.json())
                         time_qas.append(time_diff)
                         count += 1
-
                     save_json(output_qas, output_filename)
-                    logger.info(f'Output is saved to {output_filename}')
-                    logger.info(f'Average time per question: {round(sum(time_qas)/len(time_qas), 2)}s')
-                    logger.info(f'Max time per question: {round(max(time_qas), 2)}s')
-                    logger.info(f'Min time per question: {round(min(time_qas), 2)}s')
-                    logger.info(f'Standard Deviation time per question: {round(np.std(time_qas), 2)}s')
-    except Exception as e:
-        logger.error(e)
+            except Exception as e:
+                logger.error(e)
+                logger.info(f'An error occurred at Count {count}, saving what we have now...')
+                save_json(output_qas, output_filename)
+
+            logger.info(f'Output is saved to {output_filename}')
+            logger.info(f'Average time per question: {round(sum(time_qas) / len(time_qas), 2)}s')
+            logger.info(f'Max time per question: {round(max(time_qas), 2)}s')
+            logger.info(f'Min time per question: {round(min(time_qas), 2)}s')
+            logger.info(f'Standard Deviation time per question: {round(np.std(time_qas), 2)}s')
 
 
 if __name__ == '__main__':
