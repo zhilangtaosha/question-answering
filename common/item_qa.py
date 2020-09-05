@@ -16,8 +16,6 @@ class ItemQA:
     def add_answer(self, answer):
         if len(answer) > 0:
             self.answers.add(answer)
-        elif len(self.answers) == 0:
-            self.answers.add(answer)
 
     def json(self):
         return {

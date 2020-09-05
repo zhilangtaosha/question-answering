@@ -52,7 +52,7 @@ def main():
                 for qa in tqdm(data):
                     start_time = time.time()
                     prediction = finder.get_answers(question=qa['question'],
-                                                    top_k_retriever=RETRIEVER_TOP_K,
+                                                    top_k_retriever=RETRIEVER_ES_TOP_K,
                                                     top_k_reader=READER_TOP_K)
                     time_diff = time.time() - start_time
                     time_qas.append(time_diff)

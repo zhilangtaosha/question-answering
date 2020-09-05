@@ -11,11 +11,11 @@ Note that only the questions with answers are extracted.
 """
 
 from tqdm import tqdm
+from item_qa import ItemQA
 from os.path import join
 import json
 import sys
 sys.path.insert(1, join('..', '..', 'common'))
-from item_qa import ItemQA
 
 
 def parse(input_filename, output_filename):
