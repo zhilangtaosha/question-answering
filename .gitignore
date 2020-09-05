@@ -135,3 +135,6 @@ dmypy.json
 data/article_txt_got
 data/wikipedia
 models/roberta-base-squad2
+models/electra-base-squad2
+models/dpr
+haystack/
