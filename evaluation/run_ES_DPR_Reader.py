@@ -36,6 +36,14 @@ def predict_answer(question, retriever_es, retriever_dpr, reader, use_gpu):
 
 def main():
     logger = get_logger('run_ES_DPR_Reader-logger', 'run_ES_DPR_Reader.log')
+    logger.info('---------------------------------------------------------------')
+    logger.info('Parameters:')
+    logger.info(f'RETRIEVER_ES_TOP_K = {RETRIEVER_ES_TOP_K}')
+    logger.info(f'RETRIEVER_DPR_TOP_K = {RETRIEVER_DPR_TOP_K}')
+    logger.info(f'READER_TOP_K = {READER_TOP_K}')
+    logger.info(f'FAISS_INDEX_DIMENSION = {FAISS_INDEX_DIMENSION}')
+    logger.info(f'USE_GPU = {USE_GPU}')
+    logger.info('---------------------------------------------------------------')
     logger.info(f'connecting to ElasticSearch {ES_HOST}:{ES_PORT}@{ES_INDEX_NAME}...')
     document_store = get_elastic_search_document_store(ES_HOST, ES_PORT, ES_INDEX_NAME)
     logger.info('loading ES retriever...')
@@ -64,7 +72,6 @@ def main():
                     output_qas.append(item.json())
                     time_qas.append(time_diff)
                     count += 1
-                    if count > 5: break
 
                 save_json(output_qas, output_filename)
                 logger.info(f'Output is saved to {output_filename}')
