@@ -38,11 +38,11 @@ def f1_score(prediction: str, ground_truth: str) -> float:
     return f1
 
 
-def exact_match_score(prediction: str, ground_truth: str) -> bool:
-    return normalize_text(prediction) == normalize_text(ground_truth)
+def exact_match_score(prediction: str, ground_truth: str) -> float:
+    return float(normalize_text(prediction) == normalize_text(ground_truth))
 
 
-def regex_match_score(prediction: str, pattern: str) -> bool:
+def regex_match_score(prediction: str, pattern: str) -> float:
     """Check if the prediction matches the given regular expression."""
     try:
         compiled = re.compile(
@@ -53,10 +53,10 @@ def regex_match_score(prediction: str, pattern: str) -> bool:
         print('Regular expression failed to compile: %s' % pattern)
         print(e)
         return False
-    return compiled.match(prediction) is not None
+    return float(compiled.match(prediction) is not None)
 
 
-def reader_metric_max(metric_fn, pred_answer: str, gold_answers: List[str]):
+def reader_metric_max(metric_fn, pred_answer: str, gold_answers: List[str]) -> float:
     scores_for_ground_truths = []
     for gold_answer in gold_answers:
         score = metric_fn(pred_answer, gold_answer)
