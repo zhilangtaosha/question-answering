@@ -92,7 +92,7 @@ def save_output_items(output_filename: str, output_items: List[ItemQA], logger):
 
 
 def main():
-    logger = get_logger(__name__, 'run_ES_DPR_Reader.log')
+    logger = get_logger('run_ES_DPR_Reader', 'run_ES_DPR_Reader.log')
     logger.info('----------------------------')
     logger.info('Parameters:')
     logger.info(f'RETRIEVER_ES_TOP_K = {RETRIEVER_ES_TOP_K}')
@@ -125,7 +125,6 @@ def main():
                         item = predict_and_evaluate(qa, retriever_es, retriever_dpr, reader, USE_GPU)
                         output_items.append(item)
                         count += 1
-                        if count > 10: break
                     save_output_items(output_filename, output_items, logger)
             except (Exception, KeyboardInterrupt) as e:
                 logger.info(e)
@@ -135,3 +134,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

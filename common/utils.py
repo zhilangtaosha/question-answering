@@ -52,6 +52,13 @@ def get_neural_reader(reader_path, use_gpu=True):
 
 
 def get_logger(logger_name, log_file_path):
+    # list all logger names
+    # for name in logging.root.manager.loggerDict:
+    #     print(name)
+    logging.getLogger('haystack.reader.transformers_utils').setLevel(logging.ERROR)
+    logging.getLogger('haystack.reader').setLevel(logging.ERROR)
+    logging.getLogger('haystack.retriever.sparse').setLevel(logging.ERROR)
+    logging.getLogger('haystack.retriever.dense').setLevel(logging.ERROR)
     # create logger with 'spam_application'
     logger = logging.getLogger(logger_name)
     logger.setLevel(logging.DEBUG)
