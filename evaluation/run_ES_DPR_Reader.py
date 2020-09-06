@@ -126,7 +126,7 @@ def main():
                     data = json.load(f)
                     logger.info(f'{len(data)} QA entries loaded')
                     for qa in tqdm(data):
-                        if count > 932:
+                        if count > 4702:
                             item = predict_and_evaluate(qa, retriever_es, retriever_dpr, faiss_index, reader)
                             output_items.append(item)
                         count += 1
