@@ -42,6 +42,7 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, reader, use
             pred_answer = pred_answers[0]['answer']
         t = time.time() - start_time
         faiss_index.reset()
+        docs_dpr = [d.text for d in docs_dpr]
         # eval
         r_acc_es = retrieval_accuracy_max(gold_answers, docs_es)
         r_acc_dpr = retrieval_accuracy_max(gold_answers, docs_dpr)
@@ -124,6 +125,7 @@ def main():
                         item = predict_and_evaluate(qa, retriever_es, retriever_dpr, reader, USE_GPU)
                         output_items.append(item)
                         count += 1
+                        if count > 10: break
                     save_output_items(output_filename, output_items, logger)
             except (Exception, KeyboardInterrupt) as e:
                 logger.info(e)
