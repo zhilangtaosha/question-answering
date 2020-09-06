@@ -15,7 +15,7 @@ def get_output_filename(reader_path, data_path):
     return f'qa_{retriever}_DPR_{reader}_{data}.json'
 
 
-def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, reader, use_gpu):
+def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index, reader):
     question_id = gold_qa_entry['question_id']
     question = gold_qa_entry['question']
     gold_answers = gold_qa_entry['answers']
@@ -32,7 +32,6 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, reader, use
         q_vecs = retriever_dpr.embed_queries([question])
         docs_es = [d.text for d in docs]
         p_vecs = retriever_dpr.embed_passages(docs_es)
-        faiss_index = get_faiss_ip_index(d=FAISS_INDEX_DIMENSION, use_gpu=use_gpu)
         faiss_index.add(np.array(p_vecs))
         D, I = faiss_index.search(np.array(q_vecs), RETRIEVER_DPR_TOP_K)
         docs_dpr = [docs[i] for i in I[0]]
@@ -59,11 +58,7 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, reader, use
     return item
 
 
-def save_output_items(output_filename: str, output_items: List[ItemQA], logger):
-    items_json = [item.json() for item in output_items]
-    save_json(items_json, output_filename)
-    logger.info(f'Output is saved to {output_filename}')
-
+def summarize(output_items: List[ItemQA], logger):
     r_acc_es = [item.r_acc_es for item in output_items]
     logger.info(f'Avg RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(sum(r_acc_es) / len(r_acc_es), 2)}')
     logger.info(f'Max RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(max(r_acc_es), 2)}')
@@ -91,6 +86,13 @@ def save_output_items(output_filename: str, output_items: List[ItemQA], logger):
     logger.info(f'Std time per q: {round(np.std(ts), 2)}s')
 
 
+def save_output_items(output_filename: str, output_items: List[ItemQA], logger):
+    items_json = [item.json() for item in output_items]
+    save_json(items_json, output_filename)
+    logger.info(f'Output is saved to {output_filename}')
+    summarize(output_items, logger)
+
+
 def main():
     logger = get_logger('run_ES_DPR_Reader', 'run_ES_DPR_Reader.log')
     logger.info('----------------------------')
@@ -109,6 +111,8 @@ def main():
     retriever_dpr = get_dense_passage_retriever(document_store=document_store,
                                                 dpr_model_path=DPR_MODEL_PATH,
                                                 use_gpu=USE_GPU, batch_size=16, do_lower_case=True)
+    logger.info('loading FAISS index...')
+    faiss_index = get_faiss_ip_index(d=FAISS_INDEX_DIMENSION, use_gpu=USE_GPU)
     for reader_path in READERS:
         logger.info(f'loading reader at {reader_path} ...')
         reader = get_neural_reader(reader_path, use_gpu=USE_GPU)
@@ -122,8 +126,9 @@ def main():
                     data = json.load(f)
                     logger.info(f'{len(data)} QA entries loaded')
                     for qa in tqdm(data):
-                        item = predict_and_evaluate(qa, retriever_es, retriever_dpr, reader, USE_GPU)
-                        output_items.append(item)
+                        if count > 932:
+                            item = predict_and_evaluate(qa, retriever_es, retriever_dpr, faiss_index, reader)
+                            output_items.append(item)
                         count += 1
                     save_output_items(output_filename, output_items, logger)
             except (Exception, KeyboardInterrupt) as e:
@@ -135,3 +140,14 @@ def main():
 if __name__ == '__main__':
     main()
 
+    # import json
+    # with open('qa_BM25_DPR_electra-base-squad2_squad2-dev (932).json', 'r') as f:
+    #     obj = json.load(f)
+    #     print(len(obj))
+
+    # faiss_index = get_faiss_ip_index(d=3, use_gpu=USE_GPU)
+    # xb = np.random.random((10,3)).astype('float32')
+    # faiss_index.add(xb)
+    # print(faiss_index.ntotal)
+    # faiss_index.reset()
+    # print(faiss_index.ntotal)
