@@ -151,3 +151,4 @@ if __name__ == '__main__':
     # print(faiss_index.ntotal)
     # faiss_index.reset()
     # print(faiss_index.ntotal)
+
