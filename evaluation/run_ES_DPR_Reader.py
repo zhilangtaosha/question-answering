@@ -1,5 +1,6 @@
 import os, sys, time
 import numpy as np
+import json
 from tqdm import tqdm
 sys.path.insert(1, os.path.join('..', 'common'))
 from item_qa import ItemQA
@@ -58,32 +59,58 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index
     return item
 
 
-def summarize(output_items: List[ItemQA], logger):
-    r_acc_es = [item.r_acc_es for item in output_items]
-    logger.info(f'Avg RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(sum(r_acc_es) / len(r_acc_es), 2)}')
-    logger.info(f'Max RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(max(r_acc_es), 2)}')
-    logger.info(f'Min RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(min(r_acc_es), 2)}')
-    logger.info(f'Std RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(np.std(r_acc_es), 2)}')
-    r_acc_dpr = [item.r_acc_dpr for item in output_items]
-    logger.info(f'Avg RetrievalAccuracy @{RETRIEVER_DPR_TOP_K} per q: {round(sum(r_acc_dpr) / len(r_acc_dpr), 2)}')
-    logger.info(f'Max RetrievalAccuracy @{RETRIEVER_DPR_TOP_K} per q: {round(max(r_acc_dpr), 2)}')
-    logger.info(f'Min RetrievalAccuracy @{RETRIEVER_DPR_TOP_K} per q: {round(min(r_acc_dpr), 2)}')
-    logger.info(f'Std RetrievalAccuracy @{RETRIEVER_DPR_TOP_K} per q: {round(np.std(r_acc_dpr), 2)}')
+def summarize(output_items: List[ItemQA], logger=None):
+    func = logger.info if logger else print
+    # r_acc_es = [item.r_acc_es for item in output_items]
+    # func(f'Avg RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(sum(r_acc_es) / len(r_acc_es), 2)}')
+    # func(f'Max RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(max(r_acc_es), 2)}')
+    # func(f'Min RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(min(r_acc_es), 2)}')
+    # func(f'Std RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(np.std(r_acc_es), 2)}')
+    # r_acc_dpr = [item.r_acc_dpr for item in output_items]
+    # func(f'Avg RetrievalAccuracy @{RETRIEVER_DPR_TOP_K} per q: {round(sum(r_acc_dpr) / len(r_acc_dpr), 2)}')
+    # func(f'Max RetrievalAccuracy @{RETRIEVER_DPR_TOP_K} per q: {round(max(r_acc_dpr), 2)}')
+    # func(f'Min RetrievalAccuracy @{RETRIEVER_DPR_TOP_K} per q: {round(min(r_acc_dpr), 2)}')
+    # func(f'Std RetrievalAccuracy @{RETRIEVER_DPR_TOP_K} per q: {round(np.std(r_acc_dpr), 2)}')
     f1s = [item.f1 for item in output_items]
-    logger.info(f'Avg F1 per q: {round(sum(f1s) / len(f1s), 2)}')
-    logger.info(f'Max F1 per q: {round(max(f1s), 2)}')
-    logger.info(f'Min F1 per q: {round(min(f1s), 2)}')
-    logger.info(f'Std F1 per q: {round(np.std(f1s), 2)}')
+    func(f'Avg F1 per q: {round(sum(f1s) / len(f1s), 2)}')
+    func(f'Max F1 per q: {round(max(f1s), 2)}')
+    func(f'Min F1 per q: {round(min(f1s), 2)}')
+    func(f'Std F1 per q: {round(np.std(f1s), 2)}')
     ems = [item.em for item in output_items]
-    logger.info(f'Avg EM per q: {round(sum(ems) / len(ems), 2)}')
-    logger.info(f'Max EM per q: {round(max(ems), 2)}')
-    logger.info(f'Min EM per q: {round(min(ems), 2)}')
-    logger.info(f'Std EM per q: {round(np.std(ems), 2)}')
+    func(f'Avg EM per q: {round(sum(ems) / len(ems), 2)}')
+    func(f'Max EM per q: {round(max(ems), 2)}')
+    func(f'Min EM per q: {round(min(ems), 2)}')
+    func(f'Std EM per q: {round(np.std(ems), 2)}')
     ts = [item.t for item in output_items]
-    logger.info(f'Avg time per q: {round(sum(ts) / len(ts), 2)}s')
-    logger.info(f'Max time per q: {round(max(ts), 2)}s')
-    logger.info(f'Min time per q: {round(min(ts), 2)}s')
-    logger.info(f'Std time per q: {round(np.std(ts), 2)}s')
+    func(f'Avg time per q: {round(sum(ts) / len(ts), 2)}s')
+    func(f'Max time per q: {round(max(ts), 2)}s')
+    func(f'Min time per q: {round(min(ts), 2)}s')
+    func(f'Std time per q: {round(np.std(ts), 2)}s')
+
+
+def summarize_output_file(output_filename: str):
+    with open(output_filename, 'r', encoding='utf8') as f:
+        output_items = json.load(f)
+        summary_filename = output_filename.replace('.json', '_summary.txt')
+        with open(summary_filename, 'w', encoding='utf8') as fw:
+            fw.write('********** F1 **********\n')
+            f1s = [item['f1'] for item in output_items]
+            fw.write(f'Avg F1 per q: {round(sum(f1s) / len(f1s), 2)}\n')
+            fw.write(f'Max F1 per q: {round(max(f1s), 2)}\n')
+            fw.write(f'Min F1 per q: {round(min(f1s), 2)}\n')
+            fw.write(f'Std F1 per q: {round(np.std(f1s), 2)}\n')
+            fw.write('********** EM **********\n')
+            ems = [item['em'] for item in output_items]
+            fw.write(f'Avg EM per q: {round(sum(ems) / len(ems), 2)}\n')
+            fw.write(f'Max EM per q: {round(max(ems), 2)}\n')
+            fw.write(f'Min EM per q: {round(min(ems), 2)}\n')
+            fw.write(f'Std EM per q: {round(np.std(ems), 2)}\n')
+            fw.write('********** Time(s) **********\n')
+            ts = [item['t'] for item in output_items]
+            fw.write(f'Avg time per q: {round(sum(ts) / len(ts), 2)}s\n')
+            fw.write(f'Max time per q: {round(max(ts), 2)}s\n')
+            fw.write(f'Min time per q: {round(min(ts), 2)}s\n')
+            fw.write(f'Std time per q: {round(np.std(ts), 2)}s\n')
 
 
 def save_output_items(output_filename: str, output_items: List[ItemQA], logger):
@@ -138,8 +165,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
 
+    summarize_output_file('qa_BM25_DPR_electra-base-squad2_squad2-dev.json')
     # import json
     # with open('qa_BM25_DPR_electra-base-squad2_squad2-dev (932).json', 'r') as f:
     #     obj = json.load(f)
