@@ -3,7 +3,7 @@ import numpy as np
 import json
 from tqdm import tqdm
 sys.path.insert(1, os.path.join('..', 'common'))
-from item_qa import ItemQA
+from item_qa import ItemQA2
 from utils import *
 from params import *
 from eval import *
@@ -21,8 +21,8 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index
     question = gold_qa_entry['question']
     gold_answers = gold_qa_entry['answers']
     pred_answer = ''
-    r_acc_es = 0
-    r_acc_dpr = 0
+    es_ranks = []
+    dpr_ranks = []
     f1 = 0
     em = 0
     t = 0
@@ -31,93 +31,104 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index
     docs = retriever_es.retrieve(question, top_k=RETRIEVER_ES_TOP_K)
     if docs:
         q_vecs = retriever_dpr.embed_queries([question])
-        docs_es = [d.text for d in docs]
-        p_vecs = retriever_dpr.embed_passages(docs_es)
+        es_doc_texts = [d.text for d in docs]
+        p_vecs = retriever_dpr.embed_passages(es_doc_texts)
         faiss_index.add(np.array(p_vecs))
-        D, I = faiss_index.search(np.array(q_vecs), RETRIEVER_DPR_TOP_K)
-        docs_dpr = [docs[i] for i in I[0]]
-        prediction = reader.predict(question=question, documents=docs_dpr, top_k=1)
+        D, I = faiss_index.search(np.array(q_vecs), RETRIEVER_ES_TOP_K)
+        dpr_docs = [docs[I[0][i]] for i in range(RETRIEVER_DPR_TOP_K)]
+        prediction = reader.predict(question=question, documents=dpr_docs, top_k=1)
         pred_answers = prediction['answers']
         if pred_answers:
             pred_answer = pred_answers[0]['answer']
         t = time.time() - start_time
         faiss_index.reset()
-        docs_dpr = [d.text for d in docs_dpr]
         # eval
-        r_acc_es = retrieval_accuracy_max(gold_answers, docs_es)
-        r_acc_dpr = retrieval_accuracy_max(gold_answers, docs_dpr)
+        es_ranks = recall_ranks_merge(gold_answers, es_doc_texts)
+        dpr_ranks = recall_ranks_convert(es_ranks, I[0])
         f1 = reader_metric_max(f1_score, pred_answer, gold_answers)
         em = reader_metric_max(exact_match_score, pred_answer, gold_answers)
 
-    item = ItemQA(question_id, question,
-                  r_acc_es=r_acc_es,
-                  r_acc_dpr=r_acc_dpr,
-                  f1=f1,
-                  em=em,
-                  t=t)
-    item.add_answer(pred_answer)
+    item = ItemQA2(question_id, question,
+                   bm25_ranks=es_ranks,
+                   dense_ranks=dpr_ranks,
+                   f1=f1,
+                   em=em,
+                   t=t)
+    item.add_pred_answer(pred_answer)
+    for g_answer in gold_answers:
+        item.add_gold_answer(g_answer)
     return item
 
 
-def summarize(output_items: List[ItemQA], logger=None):
-    func = logger.info if logger else print
-    # r_acc_es = [item.r_acc_es for item in output_items]
-    # func(f'Avg RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(sum(r_acc_es) / len(r_acc_es), 2)}')
-    # func(f'Max RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(max(r_acc_es), 2)}')
-    # func(f'Min RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(min(r_acc_es), 2)}')
-    # func(f'Std RetrievalAccuracy @{RETRIEVER_ES_TOP_K} per q: {round(np.std(r_acc_es), 2)}')
-    # r_acc_dpr = [item.r_acc_dpr for item in output_items]
-    # func(f'Avg RetrievalAccuracy @{RETRIEVER_DPR_TOP_K} per q: {round(sum(r_acc_dpr) / len(r_acc_dpr), 2)}')
-    # func(f'Max RetrievalAccuracy @{RETRIEVER_DPR_TOP_K} per q: {round(max(r_acc_dpr), 2)}')
-    # func(f'Min RetrievalAccuracy @{RETRIEVER_DPR_TOP_K} per q: {round(min(r_acc_dpr), 2)}')
-    # func(f'Std RetrievalAccuracy @{RETRIEVER_DPR_TOP_K} per q: {round(np.std(r_acc_dpr), 2)}')
-    f1s = [item.f1 for item in output_items]
-    func(f'Avg F1 per q: {round(sum(f1s) / len(f1s), 2)}')
-    func(f'Max F1 per q: {round(max(f1s), 2)}')
-    func(f'Min F1 per q: {round(min(f1s), 2)}')
-    func(f'Std F1 per q: {round(np.std(f1s), 2)}')
-    ems = [item.em for item in output_items]
-    func(f'Avg EM per q: {round(sum(ems) / len(ems), 2)}')
-    func(f'Max EM per q: {round(max(ems), 2)}')
-    func(f'Min EM per q: {round(min(ems), 2)}')
-    func(f'Std EM per q: {round(np.std(ems), 2)}')
-    ts = [item.t for item in output_items]
-    func(f'Avg time per q: {round(sum(ts) / len(ts), 2)}s')
-    func(f'Max time per q: {round(max(ts), 2)}s')
-    func(f'Min time per q: {round(min(ts), 2)}s')
-    func(f'Std time per q: {round(np.std(ts), 2)}s')
-
-
-def summarize_output_file(output_filename: str):
+def summarize(output_filename: str):
     with open(output_filename, 'r', encoding='utf8') as f:
         output_items = json.load(f)
-        summary_filename = output_filename.replace('.json', '_summary.txt')
+        summary_filename = output_filename.replace('.json', '_summary.md')
+        pipeline_name = output_filename.replace(".json","").replace("qa_","")
         with open(summary_filename, 'w', encoding='utf8') as fw:
-            fw.write('********** F1 **********\n')
+            round_num = 3
+            fw.write('### Pipeline Parameters:\n')
+            fw.write(f'* Name: {pipeline_name}\n')
+            fw.write(f'* BM25 top K = {RETRIEVER_ES_TOP_K}\n')
+            fw.write(f'* Dense top K = {RETRIEVER_DPR_TOP_K}\n')
+            fw.write(f'* Reader top K = {READER_TOP_K}\n')
+            fw.write(f'* FAISS dimension = {FAISS_INDEX_DIMENSION}\n')
+            fw.write(f'* USE_GPU = {USE_GPU}\n')
+            fw.write(f'* Number of questions: {len(output_items)}\n')
+            fw.write(f'------\n')
+
+            fw.write('### BM25 Retrieval recall \n')
+            bm25_ranks_list = [item['bm25_ranks'] for item in output_items]
+            fw.write(f'* BM25 Recall @ 5: {round(recall_at_k(bm25_ranks_list, 5), round_num)}\n')
+            fw.write(f'* BM25 Recall @ 10: {round(recall_at_k(bm25_ranks_list, 10), round_num)}\n')
+            fw.write(f'* BM25 Recall @ 20: {round(recall_at_k(bm25_ranks_list, 20), round_num)}\n')
+            fw.write(f'* BM25 Recall @ 50: {round(recall_at_k(bm25_ranks_list, 50), round_num)}\n')
+            fw.write(f'* BM25 Recall @ 100: {round(recall_at_k(bm25_ranks_list, 100), round_num)}\n')
+            fw.write('### Dense Retrieval recall \n')
+            dense_ranks_list = [item['dense_ranks'] for item in output_items]
+            fw.write(f'* Dense Recall @ 5: {round(recall_at_k(dense_ranks_list, 5), round_num)}\n')
+            fw.write(f'* Dense Recall @ 10: {round(recall_at_k(dense_ranks_list, 10), round_num)}\n')
+            fw.write(f'* Dense Recall @ 20: {round(recall_at_k(dense_ranks_list, 20), round_num)}\n')
+            fw.write(f'* Dense Recall @ 50: {round(recall_at_k(dense_ranks_list, 50), round_num)}\n')
+            fw.write(f'* Dense Recall @ 100: {round(recall_at_k(dense_ranks_list, 100), round_num)}\n')
+            fw.write('### BM25 Retrieval precision \n')
+            fw.write(f'* BM25 Precision @ 5: {round(precision_at_k(bm25_ranks_list, 5), round_num)}\n')
+            fw.write(f'* BM25 Precision @ 10: {round(precision_at_k(bm25_ranks_list, 10), round_num)}\n')
+            fw.write(f'* BM25 Precision @ 20: {round(precision_at_k(bm25_ranks_list, 20), round_num)}\n')
+            fw.write(f'* BM25 Precision @ 50: {round(precision_at_k(bm25_ranks_list, 50), round_num)}\n')
+            fw.write(f'* BM25 Precision @ 100: {round(precision_at_k(bm25_ranks_list, 100), round_num)}\n')
+            fw.write('### Dense Retrieval Precision \n')
+            fw.write(f'* Dense Precision @ 5: {round(precision_at_k(dense_ranks_list, 5), round_num)}\n')
+            fw.write(f'* Dense Precision @ 10: {round(precision_at_k(dense_ranks_list, 10), round_num)}\n')
+            fw.write(f'* Dense Precision @ 20: {round(precision_at_k(dense_ranks_list, 20), round_num)}\n')
+            fw.write(f'* Dense Precision @ 50: {round(precision_at_k(dense_ranks_list, 50), round_num)}\n')
+            fw.write(f'* Dense Precision @ 100: {round(precision_at_k(dense_ranks_list, 100), round_num)}\n')
+
+            fw.write('### F1 \n')
             f1s = [item['f1'] for item in output_items]
-            fw.write(f'Avg F1 per q: {round(sum(f1s) / len(f1s), 2)}\n')
-            fw.write(f'Max F1 per q: {round(max(f1s), 2)}\n')
-            fw.write(f'Min F1 per q: {round(min(f1s), 2)}\n')
-            fw.write(f'Std F1 per q: {round(np.std(f1s), 2)}\n')
-            fw.write('********** EM **********\n')
+            fw.write(f'* Avg F1 per q: {round(sum(f1s) / len(f1s), round_num)}\n')
+            fw.write(f'* Max F1 per q: {round(max(f1s), round_num)}\n')
+            fw.write(f'* Min F1 per q: {round(min(f1s), round_num)}\n')
+            fw.write(f'* Std F1 per q: {round(np.std(f1s), round_num)}\n')
+            fw.write('### Exact Match \n')
             ems = [item['em'] for item in output_items]
-            fw.write(f'Avg EM per q: {round(sum(ems) / len(ems), 2)}\n')
-            fw.write(f'Max EM per q: {round(max(ems), 2)}\n')
-            fw.write(f'Min EM per q: {round(min(ems), 2)}\n')
-            fw.write(f'Std EM per q: {round(np.std(ems), 2)}\n')
-            fw.write('********** Time(s) **********\n')
+            fw.write(f'* Avg EM per q: {round(sum(ems) / len(ems), round_num)}\n')
+            fw.write(f'* Max EM per q: {round(max(ems), round_num)}\n')
+            fw.write(f'* Min EM per q: {round(min(ems), round_num)}\n')
+            fw.write(f'* Std EM per q: {round(np.std(ems), round_num)}\n')
+            fw.write('### Time(s) \n')
             ts = [item['t'] for item in output_items]
-            fw.write(f'Avg time per q: {round(sum(ts) / len(ts), 2)}s\n')
-            fw.write(f'Max time per q: {round(max(ts), 2)}s\n')
-            fw.write(f'Min time per q: {round(min(ts), 2)}s\n')
-            fw.write(f'Std time per q: {round(np.std(ts), 2)}s\n')
+            fw.write(f'* Avg time per q: {round(sum(ts) / len(ts), 2)}s\n')
+            fw.write(f'* Max time per q: {round(max(ts), 2)}s\n')
+            fw.write(f'* Min time per q: {round(min(ts), 2)}s\n')
+            fw.write(f'* Std time per q: {round(np.std(ts), 2)}s\n')
 
 
-def save_output_items(output_filename: str, output_items: List[ItemQA], logger):
+def save_output(output_filename: str, output_items: List[ItemQA2], logger):
     items_json = [item.json() for item in output_items]
     save_json(items_json, output_filename)
     logger.info(f'Output is saved to {output_filename}')
-    summarize(output_items, logger)
+    summarize(output_filename)
 
 
 def main():
@@ -153,21 +164,19 @@ def main():
                     data = json.load(f)
                     logger.info(f'{len(data)} QA entries loaded')
                     for qa in tqdm(data):
-                        if count > 4702:
-                            item = predict_and_evaluate(qa, retriever_es, retriever_dpr, faiss_index, reader)
-                            output_items.append(item)
+                        item = predict_and_evaluate(qa, retriever_es, retriever_dpr, faiss_index, reader)
+                        output_items.append(item)
                         count += 1
-                    save_output_items(output_filename, output_items, logger)
+                    save_output(output_filename, output_items, logger)
             except (Exception, KeyboardInterrupt) as e:
                 logger.info(e)
                 logger.info(f'An error occurred at Count {count}, saving what we have now...')
-                save_output_items(output_filename, output_items, logger)
+                save_output(output_filename, output_items, logger)
 
 
 if __name__ == '__main__':
-    # main()
+    main()
 
-    summarize_output_file('qa_BM25_DPR_electra-base-squad2_squad2-dev.json')
     # import json
     # with open('qa_BM25_DPR_electra-base-squad2_squad2-dev (932).json', 'r') as f:
     #     obj = json.load(f)

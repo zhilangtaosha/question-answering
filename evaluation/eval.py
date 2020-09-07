@@ -64,38 +64,102 @@ def reader_metric_max(metric_fn, pred_answer: str, gold_answers: List[str]) -> f
     return max(scores_for_ground_truths)
 
 
-def retrieval_accuracy(gold_answer: str, retrieved_documents: List[str]) -> float:
-    if not retrieved_documents:
-        return 0
-    total = float(len(retrieved_documents))
-    hits = 0
-    for d in retrieved_documents:
-        if normalize_text(gold_answer) in normalize_text(d):
-            hits += 1
-
-    return hits / total
-
-
-def retrieval_ranks_of_answer(answer: str, retrieved_documents: List[str]) -> List[int]:
+def recall_ranks(answer: str, retrieved_documents: List[str]) -> List[int]:
     """
-    return a list of ranks of which the retrieved documents contain the given answer
+    :param answer:
+    :param retrieved_documents:
+    :return: a list of ranks of which the retrieved documents contain the given answer (gold answer)
     """
     ranks = []
     answer_n = normalize_text(answer)
-    for i, d in enumerate(retrieved_documents):
+    for rank, d in enumerate(retrieved_documents):
         d = normalize_text(d)
-        rank = i + 1
         if answer_n in d:
             ranks.append(rank)
-
     return ranks
 
 
-def retrieval_accuracy_max(gold_answers: List[str], retrieved_documents: List[str]) -> float:
-    if not gold_answers:
+def recall_ranks_merge(answers: List[str], retrieved_documents: List[str]) -> List[int]:
+    """
+    :param answers: typically a set of gold answers to the same question
+    :param retrieved_documents:
+    :return: a merged list of ranks of which the retrieved documents contain the given answers
+    """
+    if not answers:
         raise Exception('Incorrect format of the gold_answers parameter')
-    scores = []
-    for gold_answer in gold_answers:
-        acc = retrieval_accuracy(gold_answer, retrieved_documents)
-        scores.append(acc)
-    return max(scores)
+    ranks = []
+    for a in answers:
+        ranks += recall_ranks(a, retrieved_documents)
+    return list(set(ranks))
+
+
+def recall_ranks_convert(target_ranks: List[int], reference_ranks: List[int]) -> List[int]:
+    """
+    This function convert the target_ranks to a new list of ranks according to the reference_ranks.
+
+    More specifically, we have
+    the documents with indices [0, 1, 2, 3, 4, 5], after reranking by e.g. Nearest Neighbor search of FAISS,
+    we have the documents reranked according to their indices: [4, 3, 0, 1, 2, 5] (reference ranks),
+    which means the document originally ranked at 4 is now ranks at 0,
+    the document originally ranked at 3 now ranks at 1, and so on. We can list them as:
+    4 -> 0
+    3 -> 1
+    0 -> 2
+    1 -> 3
+    2 -> 4
+    5 -> 5
+
+    Now suppose we have a list of target ranks that still follows the original ranks numbers, say
+    [0, 3, 5], and we want to convert it according to the reference ranks, the we would have: [2, 1, 5]
+    :param target_ranks:
+    :param reference_ranks:
+    :return:
+    """
+    rank_map = {}
+    for new_rank, old_rank in enumerate(reference_ranks):
+        rank_map[str(old_rank)] = new_rank
+    result_ranks = []
+    for old_rank in target_ranks:
+        new_rank = rank_map[str(old_rank)]
+        result_ranks.append(new_rank)
+    return result_ranks
+
+
+def recall_at_k(ranks_list: List[List[int]], k:int) -> float:
+    """
+    This function evaluates the recall of a retriever at rank K:
+    the percentage of questions of which the answers appear in top K retrieved documents.
+    :param ranks_list: each element corresponds to the ranks of the gold answer(s) of a question
+    :param k: the rank threshold
+    :return:
+    """
+    if ranks_list:
+        total = len(ranks_list)
+        hits = 0
+        for ranks in ranks_list:
+            if ranks and min(ranks) < k:
+                hits += 1
+
+        return float(hits) / total
+    return 0
+
+
+def precision_at_k(ranks_list: List[List[int]], k:int) -> float:
+    """
+    This function evaluates the precision of a retriever at rank k:
+    the average percentage of documents in which the answer of a question appears, out of top K retrieved documents
+    :param ranks_list:
+    :param k:
+    :return:
+    """
+    if ranks_list and k > 0:
+        precisions = []
+        for ranks in ranks_list:
+            hits = 0
+            for r in ranks:
+                if r < k:
+                    hits += 1
+            p = hits / float(k)
+            precisions.append(p)
+        return sum(precisions) / len(precisions)
+    return 0
