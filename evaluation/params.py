@@ -2,9 +2,9 @@ from os.path import join
 
 # Path params
 # Retriever - ElasticSearch
-ES_HOST = 'localhost'
+ES_HOST = 'localhost' #'10.206.41.13' #'localhost'
 ES_PORT = 9200
-ES_INDEX_NAME = 'wikipedia_en'
+ES_INDEX_NAME = 'wikipedia' # 'wikipedia_en'
 
 # Retriever - DPR
 DPR_MODEL_PATH = '../models/dpr/multi_hf_bert_base.cp'

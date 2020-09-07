@@ -76,6 +76,21 @@ def retrieval_accuracy(gold_answer: str, retrieved_documents: List[str]) -> floa
     return hits / total
 
 
+def retrieval_ranks_of_answer(answer: str, retrieved_documents: List[str]) -> List[int]:
+    """
+    return a list of ranks of which the retrieved documents contain the given answer
+    """
+    ranks = []
+    answer_n = normalize_text(answer)
+    for i, d in enumerate(retrieved_documents):
+        d = normalize_text(d)
+        rank = i + 1
+        if answer_n in d:
+            ranks.append(rank)
+
+    return ranks
+
+
 def retrieval_accuracy_max(gold_answers: List[str], retrieved_documents: List[str]) -> float:
     if not gold_answers:
         raise Exception('Incorrect format of the gold_answers parameter')
