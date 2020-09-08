@@ -13,7 +13,7 @@ def get_output_filename(reader_path, data_path):
     retriever = 'BM25'
     reader = os.path.basename(reader_path)
     data = os.path.basename(data_path).replace('.json', '')
-    return f'qa_{retriever}_DPR_{reader}_{data}.json'
+    return f'qa_{retriever}_{RETRIEVER_ES_TOP_K}_DPR_{RETRIEVER_DPR_TOP_K}_{reader}_{data}.json'
 
 
 def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index, reader):
@@ -36,7 +36,7 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index
         faiss_index.add(np.array(p_vecs))
         D, I = faiss_index.search(np.array(q_vecs), RETRIEVER_ES_TOP_K)
         dpr_docs = [docs[I[0][i]] for i in range(RETRIEVER_DPR_TOP_K)]
-        prediction = reader.predict(question=question, documents=dpr_docs, top_k=1)
+        prediction = reader.predict(question=question, documents=dpr_docs, top_k=READER_TOP_K)
         pred_answers = prediction['answers']
         if pred_answers:
             pred_answer = pred_answers[0]['answer']
@@ -164,8 +164,9 @@ def main():
                     data = json.load(f)
                     logger.info(f'{len(data)} QA entries loaded')
                     for qa in tqdm(data):
-                        item = predict_and_evaluate(qa, retriever_es, retriever_dpr, faiss_index, reader)
-                        output_items.append(item)
+                        if count > 1238:
+                            item = predict_and_evaluate(qa, retriever_es, retriever_dpr, faiss_index, reader)
+                            output_items.append(item)
                         count += 1
                     save_output(output_filename, output_items, logger)
             except (Exception, KeyboardInterrupt) as e:

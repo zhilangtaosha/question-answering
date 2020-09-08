@@ -4,7 +4,7 @@ from os.path import join
 # Retriever - ElasticSearch
 ES_HOST = 'localhost'
 ES_PORT = 9200
-ES_INDEX_NAME = 'wikipedia_en' # 'wikipedia' # 'wikipedia_en'
+ES_INDEX_NAME = 'wikipedia' # 'wikipedia' # 'wikipedia_en'
 
 # Retriever - DPR
 DPR_MODEL_PATH = '../models/dpr/multi_hf_bert_base.cp'
@@ -22,7 +22,7 @@ READERS = [
 
 # Model params
 USE_GPU = True
-RETRIEVER_ES_TOP_K = 100
-RETRIEVER_DPR_TOP_K = 3
+RETRIEVER_ES_TOP_K = 50
+RETRIEVER_DPR_TOP_K = 10
 READER_TOP_K = 1
 FAISS_INDEX_DIMENSION = 768

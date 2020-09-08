@@ -1,3 +1,12 @@
+### Pipeline Parameters:
+* Name: BM25_DPR_electra-base-squad2_squad2-dev
+* BM25 top K = 100
+* Dense top K = 3
+* Reader top K = 1
+* FAISS dimension = 768
+* USE_GPU = True
+* Number of questions: all
+
 ********** F1 **********
 Avg F1 per q: 0.19
 Max F1 per q: 1.0
