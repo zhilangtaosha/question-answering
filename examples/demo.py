@@ -2,11 +2,6 @@ import os
 import sys
 import numpy as np
 from haystack import Finder
-from haystack.reader.transformers import TransformersReader
-from haystack.utils import print_answers
-from haystack.database.elasticsearch import ElasticsearchDocumentStore
-from haystack.retriever.sparse import ElasticsearchRetriever
-from haystack.retriever.dense import DensePassageRetriever
 from IPython.display import display, Markdown
 
 sys.path.insert(1, os.path.join('..', 'common'))
