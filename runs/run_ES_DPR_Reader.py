@@ -2,6 +2,7 @@ import os, sys, time
 import numpy as np
 import json
 from tqdm import tqdm
+
 sys.path.insert(1, os.path.join('..', 'common'))
 from item_qa import ItemQA2
 from utils import *
@@ -31,7 +32,7 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index
     docs = retriever_es.retrieve(question, top_k=RETRIEVER_ES_TOP_K)
     if docs:
         q_vecs = retriever_dpr.embed_queries([question])
-        es_doc_texts = [d.text for d in docs]
+        es_doc_texts = [normalize_text(d.text) for d in docs]
         p_vecs = retriever_dpr.embed_passages(es_doc_texts)
         faiss_index.add(np.array(p_vecs))
         D, I = faiss_index.search(np.array(q_vecs), RETRIEVER_ES_TOP_K)
@@ -64,7 +65,7 @@ def summarize(output_filename: str):
     with open(output_filename, 'r', encoding='utf8') as f:
         output_items = json.load(f)
         summary_filename = output_filename.replace('.json', '_summary.md')
-        pipeline_name = output_filename.replace(".json","").replace("qa_","")
+        pipeline_name = output_filename.replace(".json", "").replace("qa_", "")
         with open(summary_filename, 'w', encoding='utf8') as fw:
             round_num = 3
             fw.write('### Pipeline Parameters:\n')
@@ -189,4 +190,3 @@ if __name__ == '__main__':
     # print(faiss_index.ntotal)
     # faiss_index.reset()
     # print(faiss_index.ntotal)
-

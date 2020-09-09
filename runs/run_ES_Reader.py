@@ -1,6 +1,7 @@
 import os, sys, time
 import numpy as np
 from tqdm import tqdm
+
 sys.path.insert(1, os.path.join('..', 'common'))
 from item_qa import ItemQA2
 from utils import *
@@ -54,7 +55,7 @@ def summarize(output_filename: str):
     with open(output_filename, 'r', encoding='utf8') as f:
         output_items = json.load(f)
         summary_filename = output_filename.replace('.json', '_summary.md')
-        pipeline_name = output_filename.replace(".json","").replace("qa_","")
+        pipeline_name = output_filename.replace(".json", "").replace("qa_", "")
         with open(summary_filename, 'w', encoding='utf8') as fw:
             round_num = 3
             fw.write('### Pipeline Parameters:\n')
