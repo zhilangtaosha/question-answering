@@ -43,10 +43,10 @@ def main():
     count = 0
     batch_size = 64
     docs = []
-    vw = VecsWriter(250)
-    # retriever_dpr = get_dense_passage_retriever(document_store=None,
-    #                                             dpr_model_path=DPR_MODEL_PATH,
-    #                                             use_gpu=USE_GPU, batch_size=batch_size, do_lower_case=True)
+    vw = VecsWriter(249)
+    retriever_dpr = get_dense_passage_retriever(document_store=None,
+                                                dpr_model_path=DPR_MODEL_PATH,
+                                                use_gpu=USE_GPU, batch_size=batch_size, do_lower_case=True)
     try:
         es = elasticsearch.Elasticsearch(f'http://{ES_HOST}:{ES_PORT}')
         es_response = scan(
