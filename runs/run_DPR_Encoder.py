@@ -25,6 +25,7 @@ class BatchWriter:
         self.output_file_prefix = output_file_prefix
 
     def save_batch(self):
+        print('---------------------------> save batch')
         if self.items:
             output_file_path = f'{self.output_file_prefix}{str(self.count)}.npy'
             output_file_path = os.path.join(self.output_dir, output_file_path)
@@ -106,16 +107,14 @@ def main():
         )
         for item in tqdm(es_response, total=total_docs):
             count += 1
-            if count < 100:
-                _id = item['_id']
-                doc_ids.append(_id)
-                text = item['_source']['text']
-                docs_original.append(text)
-                n_text = normalize_text(text)
-                docs_normalized.append(n_text)
-                if len(docs_normalized) == embed_batch_size:
-                    embed_batch(batch_writer, encoder, doc_ids, docs_original, docs_normalized)
-            else: break
+            _id = item['_id']
+            doc_ids.append(_id)
+            text = item['_source']['text']
+            docs_original.append(text)
+            n_text = normalize_text(text)
+            docs_normalized.append(n_text)
+            if len(docs_normalized) == embed_batch_size:
+                embed_batch(batch_writer, encoder, doc_ids, docs_original, docs_normalized)
 
         # encode remaining docs
         if doc_ids:
@@ -133,6 +132,8 @@ if __name__ == '__main__':
 
     # v0 = np.load('batch_0.npy', allow_pickle=True)
     # print(len(v0))
+    # print(v0[0]['id'])
+    # print(v0[0]['text'])
     # v1 = np.load('vecs_1.npy')
     # print(len(v1))
     # v2 = np.load('vecs_2.npy')

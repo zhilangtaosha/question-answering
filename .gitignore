@@ -139,3 +139,4 @@ models/electra-base-squad2
 models/bert-base-uncased
 models/dpr
 haystack*/
+runs/output_para_embeddings
