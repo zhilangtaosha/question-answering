@@ -1,6 +1,7 @@
 import json
 import faiss
 import logging
+import numpy as np
 from haystack.database.elasticsearch import ElasticsearchDocumentStore
 from haystack.retriever.sparse import ElasticsearchRetriever
 from haystack.retriever.dense import DensePassageRetriever
@@ -25,9 +26,14 @@ def get_faiss_ip_index(d=768, use_gpu=True):
     return index_cpu
 
 
-def get_elastic_search_document_store(es_host, es_port, es_index_name):
+def get_elastic_search_document_store(es_host='localhost',
+                                      es_port=9200,
+                                      es_index_name='wikipedia',
+                                      search_fields=['text']):
     return ElasticsearchDocumentStore(host=es_host, port=es_port,
-                                      username="", password="", index=es_index_name)
+                                      username="", password="",
+                                      index=es_index_name,
+                                      search_fields=search_fields)
 
 
 def get_elastic_search_retriever(document_store):
@@ -76,3 +82,13 @@ def get_logger(logger_name, log_file_path):
     logger.addHandler(fh)
     logger.addHandler(ch)
     return logger
+
+
+def load_qa_data(data_path, seed=None, subset=None):
+    with open(data_path, 'r', encoding='utf8') as f:
+        loaded_data = json.load(f)
+        if seed is not None and subset is not None:
+            np.random.seed(seed=seed)
+            subset_indices = np.random.choice(range(len(loaded_data)), subset, replace=False)
+            loaded_data = [loaded_data[i] for i in subset_indices]
+        return loaded_data

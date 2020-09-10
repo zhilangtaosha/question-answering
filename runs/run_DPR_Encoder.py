@@ -85,7 +85,7 @@ def main():
     logger = get_logger('run_DPR_Encoder', 'run_DPR_Encoder.log')
     count = 0
     embed_batch_size = 128
-    writer_batch_size = 1280
+    writer_batch_size = 100000
     total_docs = 36323970 # 6005733 document-level docs, 36323970 paragraph-level docs
 
     try:

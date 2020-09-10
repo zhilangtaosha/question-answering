@@ -25,17 +25,29 @@ def normalize_text(s: str) -> str:
     return white_space_fix(remove_articles(remove_punc(lower(s))))
 
 
-def f1_score(prediction: str, ground_truth: str) -> float:
+def f1_score(prediction: str, ground_truth: str) -> tuple:
     prediction_tokens = normalize_text(prediction).split()
     ground_truth_tokens = normalize_text(ground_truth).split()
     common = Counter(prediction_tokens) & Counter(ground_truth_tokens)
     num_same = sum(common.values())
     if num_same == 0:
-        return 0
+        return 0, 0, 0
     precision = 1.0 * num_same / len(prediction_tokens)
     recall = 1.0 * num_same / len(ground_truth_tokens)
     f1 = (2 * precision * recall) / (precision + recall)
-    return f1
+    return f1, precision, recall
+
+
+def reader_f1_max(pred_answer: str, gold_answers: List[str]) -> tuple:
+    fs = []
+    ps = []
+    rs = []
+    for gold_answer in gold_answers:
+        f, p, r = f1_score(pred_answer, gold_answer)
+        fs.append(f)
+        ps.append(p)
+        rs.append(r)
+    return max(fs), max(ps), max(rs)
 
 
 def exact_match_score(prediction: str, ground_truth: str) -> float:
@@ -56,7 +68,7 @@ def regex_match_score(prediction: str, pattern: str) -> float:
     return float(compiled.match(prediction) is not None)
 
 
-def reader_metric_max(metric_fn, pred_answer: str, gold_answers: List[str]) -> float:
+def reader_match_max(metric_fn, pred_answer: str, gold_answers: List[str]) -> float:
     scores_for_ground_truths = []
     for gold_answer in gold_answers:
         score = metric_fn(pred_answer, gold_answer)

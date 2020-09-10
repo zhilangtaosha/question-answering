@@ -11,9 +11,9 @@ from eval import *
 
 def get_output_filename(reader_path, data_path):
     retriever = 'BM25'
-    reader = os.path.basename(reader_path)
-    data = os.path.basename(data_path).replace('.json', '')
-    return f'qa_{retriever}_{RETRIEVER_ES_TOP_K}_{reader}_{data}.json'
+    reader_name = os.path.basename(reader_path)
+    data_name = os.path.basename(data_path).replace('.json', '')
+    return f'qa_{retriever}_{RETRIEVER_ES_TOP_K}_{reader_name}_{data_name}.json'
 
 
 def predict_and_evaluate(gold_qa_entry, retriever_es, reader):
@@ -23,6 +23,8 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, reader):
     pred_answer = ''
     es_ranks = []
     f1 = 0
+    p = 0
+    r = 0
     em = 0
     t = 0
 
@@ -37,12 +39,14 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, reader):
         # eval
         es_doc_texts = [d.text for d in docs]
         es_ranks = recall_ranks_merge(gold_answers, es_doc_texts)
-        f1 = reader_metric_max(f1_score, pred_answer, gold_answers)
-        em = reader_metric_max(exact_match_score, pred_answer, gold_answers)
+        f1, p, r = reader_f1_max(pred_answer, gold_answers)
+        em = reader_match_max(exact_match_score, pred_answer, gold_answers)
 
     item = ItemQA2(question_id, question,
                    bm25_ranks=es_ranks,
                    f1=f1,
+                   p=p,
+                   r=r,
                    em=em,
                    t=t)
     item.add_pred_answer(pred_answer)
@@ -82,19 +86,35 @@ def summarize(output_filename: str):
 
             fw.write('### F1 \n')
             f1s = [item['f1'] for item in output_items]
-            fw.write(f'* Avg F1 per q: {round(sum(f1s) / len(f1s), round_num)}\n')
+            fw.write(f'* Mean F1 per q: {round(sum(f1s) / len(f1s), round_num)}\n')
+            fw.write(f'* Median F1 per q: {round(np.median(f1s), round_num)}\n')
             fw.write(f'* Max F1 per q: {round(max(f1s), round_num)}\n')
             fw.write(f'* Min F1 per q: {round(min(f1s), round_num)}\n')
             fw.write(f'* Std F1 per q: {round(np.std(f1s), round_num)}\n')
+            fw.write('### Precision \n')
+            ps = [item['p'] for item in output_items]
+            fw.write(f'* Mean precision per q: {round(sum(ps) / len(ps), round_num)}\n')
+            fw.write(f'* Median precision per q: {round(np.median(ps), round_num)}\n')
+            fw.write(f'* Max precision per q: {round(max(ps), round_num)}\n')
+            fw.write(f'* Min precision per q: {round(min(ps), round_num)}\n')
+            fw.write(f'* Std precision per q: {round(np.std(ps), round_num)}\n')
+            fw.write('### Recall \n')
+            rs = [item['r'] for item in output_items]
+            fw.write(f'* Mean recall per q: {round(sum(rs) / len(rs), round_num)}\n')
+            fw.write(f'* Median recall per q: {round(np.median(rs), round_num)}\n')
+            fw.write(f'* Max recall per q: {round(max(rs), round_num)}\n')
+            fw.write(f'* Min recall per q: {round(min(rs), round_num)}\n')
+            fw.write(f'* Std recall per q: {round(np.std(rs), round_num)}\n')
             fw.write('### Exact Match \n')
             ems = [item['em'] for item in output_items]
-            fw.write(f'* Avg EM per q: {round(sum(ems) / len(ems), round_num)}\n')
+            fw.write(f'* Mean EM per q: {round(sum(ems) / len(ems), round_num)}\n')
+            fw.write(f'* Median EM per q: {round(np.median(ems), round_num)}\n')
             fw.write(f'* Max EM per q: {round(max(ems), round_num)}\n')
             fw.write(f'* Min EM per q: {round(min(ems), round_num)}\n')
             fw.write(f'* Std EM per q: {round(np.std(ems), round_num)}\n')
             fw.write('### Time(s) \n')
             ts = [item['t'] for item in output_items]
-            fw.write(f'* Avg time per q: {round(sum(ts) / len(ts), 2)}s\n')
+            fw.write(f'* Mean time per q: {round(sum(ts) / len(ts), 2)}s\n')
             fw.write(f'* Max time per q: {round(max(ts), 2)}s\n')
             fw.write(f'* Min time per q: {round(min(ts), 2)}s\n')
             fw.write(f'* Std time per q: {round(np.std(ts), 2)}s\n')
@@ -128,15 +148,14 @@ def main():
             output_items = []
             count = 0
             try:
-                with open(data_path, 'r', encoding='utf8') as f:
-                    data = json.load(f)
-                    logger.info(f'{len(data)} QA entries loaded')
-                    for qa in tqdm(data):
-                        if count >= 0:
-                            item = predict_and_evaluate(qa, retriever_es, reader)
-                            output_items.append(item)
-                        count += 1
-                    save_output(output_filename, output_items, logger)
+                data = load_qa_data(data_path, seed=SEED, subset=SUBSET)
+                logger.info(f'{len(data)} QA entries loaded')
+                for qa in tqdm(data):
+                    item = predict_and_evaluate(qa, retriever_es, reader)
+                    output_items.append(item)
+                    count += 1
+                save_output(output_filename, output_items, logger)
+
             except (Exception, KeyboardInterrupt) as e:
                 logger.info(e)
                 logger.info(f'An error occurred at Count {count}, saving what we have now...')
