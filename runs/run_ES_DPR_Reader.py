@@ -14,7 +14,10 @@ def get_output_filename(reader_path, data_path):
     retriever = 'BM25'
     reader = os.path.basename(reader_path)
     data = os.path.basename(data_path).replace('.json', '')
-    return f'qa_{retriever}_{RETRIEVER_ES_TOP_K}_DPR_{RETRIEVER_DPR_TOP_K}_{reader}_{data}.json'
+    output_name = f'qa_{retriever}_{RETRIEVER_ES_TOP_K}_DPR_{RETRIEVER_DPR_TOP_K}_{reader}_{data}'
+    if SUBSET is not None:
+        output_name += f'_{SUBSET}'
+    return output_name + '.json'
 
 
 def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index, reader):
