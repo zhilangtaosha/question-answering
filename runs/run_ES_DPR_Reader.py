@@ -9,6 +9,9 @@ from utils import *
 from params import *
 from eval import *
 
+RETRIEVER_ES_TOP_K = 1000
+RETRIEVER_DPR_TOP_K = 20
+
 
 def get_output_filename(reader_path, data_path):
     retriever = 'BM25'
