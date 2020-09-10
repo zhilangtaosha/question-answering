@@ -23,9 +23,11 @@ def get_output_filename(reader_path, data_path):
 
 
 def predict_and_evaluate(gold_qa_entry, retriever_es, reader):
+    gold_answers = gold_qa_entry['answers']
+    if len(gold_answers) == 0:
+        return None
     question_id = gold_qa_entry['question_id']
     question = gold_qa_entry['question']
-    gold_answers = gold_qa_entry['answers']
     pred_answer = ''
     es_ranks = []
     f1 = 0
@@ -159,7 +161,8 @@ def main():
                 logger.info(f'{len(data)} QA entries loaded')
                 for qa in tqdm(data):
                     item = predict_and_evaluate(qa, retriever_es, reader)
-                    output_items.append(item)
+                    if item is not None:
+                        output_items.append(item)
                     count += 1
                 save_output(output_filename, output_items, logger)
 
