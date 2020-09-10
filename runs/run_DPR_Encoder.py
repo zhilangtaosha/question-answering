@@ -25,7 +25,7 @@ class BatchWriter:
         self.output_file_prefix = output_file_prefix
 
     def save_batch(self):
-        print('---------------------------> save batch')
+        print(f'save batch {self.count}')
         if self.items:
             output_file_path = f'{self.output_file_prefix}{str(self.count)}.npy'
             output_file_path = os.path.join(self.output_dir, output_file_path)
