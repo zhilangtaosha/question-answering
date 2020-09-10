@@ -86,6 +86,7 @@ def summarize(output_filename: str):
             fw.write(f'* FAISS dimension = {FAISS_INDEX_DIMENSION}\n')
             fw.write(f'* USE_GPU = {USE_GPU}\n')
             fw.write(f'* Number of questions: {len(output_items)}\n')
+            fw.write(f'* Seed = {SEED}\n')
             fw.write(f'------\n')
 
             fw.write('### BM25 Retrieval recall \n')
