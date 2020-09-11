@@ -37,6 +37,7 @@ def parse(input_filename, output_filename):
         current_qa_item = None
         total_count = 0
         qa_count = 0
+        result_s = ''
         for prefix, event, value in parser:
             if (prefix, event) == ('Data.item', 'start_map'):
                 current_qa_item = ItemQA()
@@ -54,7 +55,10 @@ def parse(input_filename, output_filename):
                     assert current_qa_item.question_id is None
                     current_qa_item.set_question_id(value)
             elif (prefix, event) == ('Data.item', 'end_map'):
-                fw.write(current_qa_item.json_string()+',\n')
+                result_s += current_qa_item.json_string()+',\n'
+
+        result_s = result_s[:-2]
+        fw.write(result_s)
         fw.write(']\n')
         fw.close()
         print(f'Finished processing {input_filename}')

@@ -89,6 +89,7 @@ def load_qa_data(data_path, seed=None, subset=None):
         loaded_data = json.load(f)
         if seed is not None and subset is not None:
             np.random.seed(seed=seed)
+            subset = min(len(loaded_data), subset)
             subset_indices = np.random.choice(range(len(loaded_data)), subset, replace=False)
             loaded_data = [loaded_data[i] for i in subset_indices]
         return loaded_data

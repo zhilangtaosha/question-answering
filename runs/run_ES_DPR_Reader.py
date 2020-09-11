@@ -23,7 +23,7 @@ def get_output_filename(reader_path, data_path):
     return output_name + '.json'
 
 
-def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index, reader):
+def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index, reader, normalize=False):
     gold_answers = gold_qa_entry['answers']
     if len(gold_answers) == 0:
         return None
@@ -42,7 +42,9 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index
     docs = retriever_es.retrieve(question, top_k=RETRIEVER_ES_TOP_K)
     if docs:
         q_vecs = retriever_dpr.embed_queries([question])
-        es_doc_texts = [normalize_text(d.text) for d in docs]
+        es_doc_texts = [d.text for d in docs]
+        if normalize:
+            es_doc_texts = [normalize_text(d) for d in es_doc_texts]
         p_vecs = retriever_dpr.embed_passages(es_doc_texts)
         faiss_index.add(np.array(p_vecs))
         D, I = faiss_index.search(np.array(q_vecs), RETRIEVER_ES_TOP_K)
