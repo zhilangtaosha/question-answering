@@ -17,7 +17,7 @@ DATASETS = [
     join(DATA_DIR, 'quasarT', 'quasarT-dev.json'),
     join(DATA_DIR, 'searchQA', 'searchQA-dev.json'),
     join(DATA_DIR, 'triviaQA', 'triviaQA-dev.json'),
-    join(DATA_DIR, 'wikiQA', 'wikiQA-dev.json'),
+    join(DATA_DIR, 'wikiQA', 'wikiQA-dev.json')
 ]
 # Readers
 MODELS_DIR = join('..', 'models')

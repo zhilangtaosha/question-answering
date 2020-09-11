@@ -11,8 +11,8 @@ and put it in the same directory as this script, rename it to e.g. "original"
 from os.path import join
 import ijson
 import sys
-sys.path.insert(1, join('..', '..', 'common'))
-from item_qa import ItemQA
+sys.path.insert(1, join('..'))
+from data_utils import *
 
 
 def parse(input_filename, output_filename):
@@ -40,7 +40,7 @@ def parse(input_filename, output_filename):
         result_s = ''
         for prefix, event, value in parser:
             if (prefix, event) == ('Data.item', 'start_map'):
-                current_qa_item = ItemQA()
+                current_qa_item = DataItemQA()
                 qa_count += 1
                 if qa_count % 1000 == 0:
                     print(qa_count)

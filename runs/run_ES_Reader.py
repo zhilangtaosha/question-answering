@@ -8,7 +8,10 @@ from utils import *
 from params import *
 from eval import *
 
-
+DATA_DIR = join('..', 'data')
+DATASETS = [
+    join(DATA_DIR, 'wikiQA', 'wikiQA-test.json')
+]
 RETRIEVER_ES_TOP_K = 20
 
 

@@ -19,7 +19,7 @@ from eval import *
 class BatchWriter:
     def __init__(self, batch_size=1000, output_dir='', output_file_prefix='batch_'):
         self.items = []
-        self.count = 0
+        self.count = 28
         self.batch_size = batch_size
         self.output_dir = output_dir
         self.output_file_prefix = output_file_prefix
@@ -107,14 +107,15 @@ def main():
         )
         for item in tqdm(es_response, total=total_docs):
             count += 1
-            _id = item['_id']
-            doc_ids.append(_id)
-            text = item['_source']['text']
-            docs_original.append(text)
-            n_text = normalize_text(text)
-            docs_normalized.append(n_text)
-            if len(docs_normalized) == embed_batch_size:
-                embed_batch(batch_writer, encoder, doc_ids, docs_original, docs_normalized)
+            if count >= 27*writer_batch_size:
+                _id = item['_id']
+                doc_ids.append(_id)
+                text = item['_source']['text']
+                docs_original.append(text)
+                n_text = normalize_text(text)
+                docs_normalized.append(n_text)
+                if len(docs_normalized) == embed_batch_size:
+                    embed_batch(batch_writer, encoder, doc_ids, docs_original, docs_normalized)
 
         # encode remaining docs
         if doc_ids:

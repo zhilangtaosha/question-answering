@@ -13,8 +13,8 @@ from os.path import join
 from zipfile import ZipFile
 import json
 import sys
-sys.path.insert(1, join('..', '..', 'common'))
-from item_qa import ItemQA
+sys.path.insert(1, join('..'))
+from data_utils import *
 
 
 def parse(input_filename, output_filename):
@@ -27,7 +27,7 @@ def parse(input_filename, output_filename):
                 question = obj['question']
                 question_id = obj['id']
                 answer = obj['answer']
-                item = ItemQA(question_id, question)
+                item = DataItemQA(question_id, question)
                 item.add_answer(answer)
                 items.append(item.json())
 

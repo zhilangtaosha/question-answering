@@ -12,8 +12,8 @@ from tqdm import tqdm
 from os.path import join
 import json
 import sys
-sys.path.insert(1, join('..', '..', 'common'))
-from item_qa import ItemQA
+sys.path.insert(1, join('..'))
+from data_utils import *
 
 
 def parse(input_filename, output_filename):
@@ -25,7 +25,7 @@ def parse(input_filename, output_filename):
             answer = obj['answer']
             question = obj['question']
             question_id = obj['uid']
-            item = ItemQA(question_id, question)
+            item = DataItemQA(question_id, question)
             item.add_answer(answer)
             items.append(item.json())
 

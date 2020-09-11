@@ -11,11 +11,11 @@ Note that only the questions with answers are extracted.
 """
 
 from tqdm import tqdm
-from item_qa import ItemQA
 from os.path import join
 import json
 import sys
-sys.path.insert(1, join('..', '..', 'common'))
+sys.path.insert(1, join('..'))
+from data_utils import *
 
 
 def parse(input_filename, output_filename):
@@ -33,7 +33,7 @@ def parse(input_filename, output_filename):
                     if len(answers) > 0:
                         question_id = qa['id']
                         question = qa['question']
-                        item = ItemQA(question_id, question)
+                        item = DataItemQA(question_id, question)
                         for a in answers:
                             answer = a['text']
                             item.add_answer(answer)

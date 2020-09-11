@@ -17,8 +17,8 @@ from os.path import join
 import json
 import sys
 import re
-sys.path.insert(1, join('..', '..', 'common'))
-from item_qa import ItemQA
+sys.path.insert(1, join('..'))
+from data_utils import *
 
 
 def remove_html_tags(text):
@@ -63,7 +63,7 @@ def parse(input_filename, output_filename):
             question_id = doc['document_url']
             question = doc['question_text']
             doc_tokens = doc['document_tokens']
-            qa = ItemQA(question_id, question)
+            qa = DataItemQA(question_id, question)
             for annt in annotations:
                 long_answer_obj = annt['long_answer']
                 long_answer = get_answer(doc_tokens, long_answer_obj)
