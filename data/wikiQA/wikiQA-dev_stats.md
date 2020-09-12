@@ -1,5 +1,6 @@
 * Average Number of Answers per Question: 1.1
 ##### Questions <126>:
+Num.Questions with Answers: 126 (100.0%)
 ##### Tokens / Characters 
 * mean: 6.3 / 33.7
 * std: 2.1 / 11.3
@@ -16,6 +17,7 @@
 ------
 ### Who
 ##### Questions <15 (11.9%)>:
+Num.Questions with Answers: 15 (100.0%)
 ##### Tokens / Characters 
 * mean: 6.9 / 34.4
 * std: 2.1 / 10.7
@@ -32,6 +34,7 @@
 ------
 ### What
 ##### Questions <73 (57.9%)>:
+Num.Questions with Answers: 73 (100.0%)
 ##### Tokens / Characters 
 * mean: 6.4 / 34.4
 * std: 2.3 / 12.8
@@ -48,6 +51,7 @@
 ------
 ### Why
 ##### Questions <0 (0.0%)>:
+Num.Questions with Answers: 0 (0%)
 ##### Tokens / Characters 
 * mean: 0 / 0
 * std: 0 / 0
@@ -64,6 +68,7 @@
 ------
 ### When
 ##### Questions <11 (8.7%)>:
+Num.Questions with Answers: 11 (100.0%)
 ##### Tokens / Characters 
 * mean: 5.9 / 32.3
 * std: 1.2 / 5.2
@@ -80,6 +85,7 @@
 ------
 ### Where
 ##### Questions <17 (13.5%)>:
+Num.Questions with Answers: 17 (100.0%)
 ##### Tokens / Characters 
 * mean: 5.4 / 29.9
 * std: 1.5 / 6.9
@@ -94,8 +100,26 @@
 * max: 34 / 213
 * median: 20.5 / 131.0
 ------
+### Which
+##### Questions <0 (0.0%)>:
+Num.Questions with Answers: 0 (0%)
+##### Tokens / Characters 
+* mean: 0 / 0
+* std: 0 / 0
+* min: 0 / 0
+* max: 0 / 0
+* median: 0 / 0
+##### Answers <0 (0.0%)>:
+##### Tokens / Characters 
+* mean: 0 / 0
+* std: 0 / 0
+* min: 0 / 0
+* max: 0 / 0
+* median: 0 / 0
+------
 ### How
 ##### Questions <10 (7.9%)>:
+Num.Questions with Answers: 10 (100.0%)
 ##### Tokens / Characters 
 * mean: 7.1 / 36.1
 * std: 1.8 / 9.8
@@ -112,6 +136,7 @@
 ------
 ### Others
 ##### Questions <0 (0.0%)>:
+Num.Questions with Answers: 0 (0%)
 ##### Tokens / Characters 
 * mean: 0 / 0
 * std: 0 / 0

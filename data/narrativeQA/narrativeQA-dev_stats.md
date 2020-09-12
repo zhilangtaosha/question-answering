@@ -1,5 +1,6 @@
 * Average Number of Answers per Question: 1.9
 ##### Questions <3461>:
+Num.Questions with Answers: 3461 (100.0%)
 ##### Tokens / Characters 
 * mean: 8.2 / 45.3
 * std: 3.1 / 17.1
@@ -16,6 +17,7 @@
 ------
 ### Who
 ##### Questions <827 (23.9%)>:
+Num.Questions with Answers: 827 (100.0%)
 ##### Tokens / Characters 
 * mean: 7.4 / 40.2
 * std: 3.0 / 17.0
@@ -31,23 +33,25 @@
 * median: 2.0 / 13.0
 ------
 ### What
-##### Questions <1341 (38.7%)>:
+##### Questions <1370 (39.6%)>:
+Num.Questions with Answers: 1370 (100.0%)
 ##### Tokens / Characters 
 * mean: 8.9 / 49.2
-* std: 3.1 / 16.5
+* std: 3.1 / 16.6
 * min: 3 / 16
 * max: 26 / 158
-* median: 8.0 / 47.0
-##### Answers <2548 (39.2%)>:
+* median: 8.0 / 46.0
+##### Answers <2599 (40.0%)>:
 ##### Tokens / Characters 
-* mean: 4.5 / 24.3
-* std: 3.5 / 18.5
+* mean: 4.4 / 24.1
+* std: 3.5 / 18.4
 * min: 1 / 2
 * max: 28 / 163
-* median: 3.0 / 19.0
+* median: 3.0 / 18.0
 ------
 ### Why
 ##### Questions <326 (9.4%)>:
+Num.Questions with Answers: 326 (100.0%)
 ##### Tokens / Characters 
 * mean: 8.4 / 45.2
 * std: 2.8 / 14.8
@@ -64,6 +68,7 @@
 ------
 ### When
 ##### Questions <45 (1.3%)>:
+Num.Questions with Answers: 45 (100.0%)
 ##### Tokens / Characters 
 * mean: 8.5 / 47.2
 * std: 2.7 / 14.9
@@ -80,6 +85,7 @@
 ------
 ### Where
 ##### Questions <265 (7.7%)>:
+Num.Questions with Answers: 265 (100.0%)
 ##### Tokens / Characters 
 * mean: 7.8 / 42.7
 * std: 2.8 / 15.4
@@ -94,8 +100,26 @@
 * max: 18 / 82
 * median: 3.0 / 14.0
 ------
+### Which
+##### Questions <61 (1.8%)>:
+Num.Questions with Answers: 61 (100.0%)
+##### Tokens / Characters 
+* mean: 9.0 / 53.1
+* std: 2.9 / 16.8
+* min: 3 / 25
+* max: 19 / 107
+* median: 9.0 / 50.0
+##### Answers <109 (1.7%)>:
+##### Tokens / Characters 
+* mean: 2.8 / 16.0
+* std: 2.5 / 12.9
+* min: 1 / 3
+* max: 15 / 78
+* median: 2.0 / 12.0
+------
 ### How
 ##### Questions <311 (9.0%)>:
+Num.Questions with Answers: 311 (100.0%)
 ##### Tokens / Characters 
 * mean: 8.3 / 45.2
 * std: 3.2 / 17.6
@@ -111,18 +135,19 @@
 * median: 4.0 / 21.0
 ------
 ### Others
-##### Questions <346 (10.0%)>:
+##### Questions <256 (7.4%)>:
+Num.Questions with Answers: 256 (100.0%)
 ##### Tokens / Characters 
-* mean: 7.8 / 44.1
-* std: 3.3 / 19.1
+* mean: 7.3 / 41.4
+* std: 3.3 / 18.9
 * min: 1 / 4
-* max: 22 / 133
-* median: 8.0 / 42.0
-##### Answers <653 (10.1%)>:
+* max: 18 / 103
+* median: 7.0 / 38.0
+##### Answers <493 (7.6%)>:
 ##### Tokens / Characters 
-* mean: 4.5 / 24.2
-* std: 3.7 / 19.1
+* mean: 5.0 / 26.6
+* std: 3.8 / 19.8
 * min: 1 / 2
 * max: 24 / 122
-* median: 3.0 / 18.0
+* median: 4.0 / 22.0
 ------

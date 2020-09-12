@@ -85,16 +85,58 @@ def parse(input_filename, output_filename):
         print('---------------------------------------')
 
 
-if __name__ == '__main__':
-    dev_path = 'original/v1.0-simplified_nq-dev-all.jsonl'
-    dev_output_path = 'naturalQuestions-dev.json'
-    parse(dev_path, dev_output_path)
+def parse_more(parsed_json_filename):
+    """
+    NaturalQuestions has quite some questions with no answers,
+    and with long answers, this parse function further remove
+    the question without answers, and long answers from questions
+    :param parsed_json_filename:
+    :return:
+    """
+    with open(parsed_json_filename, 'r', encoding='utf8') as f:
+        data = json.load(f)
+        items = []
+        total_count = 0
+        for obj in data:
+            if obj['answers']:
+                item = DataItemQA(obj['question_id'], obj['question'])
+                for a in obj['answers']:
+                    tokens = a.split(' ')
+                    if len(tokens) < 20:
+                        total_count += 1
+                        item.add_answer(a)
+                if item.answers:
+                    items.append(item.json())
 
+        output_filename = parsed_json_filename.replace('.json', '-clean.json')
+        with open(output_filename, 'w', encoding='utf8') as out:
+            json.dump(items, out, ensure_ascii=False)
+        print('---------------------------------------')
+        print(f'Finished cleaning {parsed_json_filename}')
+        print(f'Number of QA pairs: {total_count}')
+        print(f'Number of unique questions: {len(items)}')
+        print('---------------------------------------')
+
+
+if __name__ == '__main__':
+    dev_output_path = 'naturalQuestions-dev.json'
+    # dev_path = 'original/v1.0-simplified_nq-dev-all.jsonl'
+    # parse(dev_path, dev_output_path)
     '''
     Expected output
     ---------------------------------------
     Finished processing original/v1.0-simplified_nq-dev-all.jsonl
     Number of QA pairs: 55,576
     Number of unique questions: 7,830
+    ---------------------------------------
+    '''
+
+    parse_more(dev_output_path)
+    '''
+    Expected output:
+    ---------------------------------------
+    Finished cleaning naturalQuestions-dev.json
+    Number of QA pairs: 8,553
+    Number of unique questions: 4,201
     ---------------------------------------
     '''

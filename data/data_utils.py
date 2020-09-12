@@ -68,9 +68,17 @@ def stat_strs(dist: List[str]) -> str:
 
 def stat_items(items: List, total_questions=None, total_answers=None) -> str:
     qs = [item['question'] for item in items]
+    questions_with_answer = []
+    for item in items:
+        if item['answers']:
+            questions_with_answer.append(item)
+    num_qs_w_ans = len(questions_with_answer)
+    num_qs_w_ans_stat = 0 if num_qs_w_ans == 0 else num_qs_w_ans / len(items)
+    num_qs_w_ans_stat = f'({round(num_qs_w_ans_stat*100, 1)}%)'
     q_perc = '{:.1%}'.format(len(qs) / total_questions) if isinstance(total_questions, int) else None
     q_stat = f'{len(qs)} ({q_perc})' if q_perc is not None else f'{len(qs)}'
     s = f'##### Questions <{q_stat}>:\n'
+    s += f'Num.Questions with Answers: {num_qs_w_ans} {num_qs_w_ans_stat}\n'
     s += stat_strs(qs)
     answers = []
     for item in items:
@@ -94,6 +102,7 @@ def data_stats(parsed_data_path):
             'why': [],
             'when': [],
             'where': [],
+            'which': [],
             'how': [],
             'others': []
         }
@@ -104,7 +113,13 @@ def data_stats(parsed_data_path):
             num_answers += len(item['answers'])
             if question.startswith('who'):
                 q_dict['who'].append(item)
-            elif question.startswith('what'):
+            elif question.startswith('what') or \
+                    question.startswith('in what') or \
+                    question.startswith('on what') or \
+                    question.startswith('at what') or \
+                    question.startswith('under what') or \
+                    question.startswith('about what') or \
+                    question.startswith('of what'):
                 q_dict['what'].append(item)
             elif question.startswith('why'):
                 q_dict['why'].append(item)
@@ -114,6 +129,14 @@ def data_stats(parsed_data_path):
                 q_dict['where'].append(item)
             elif question.startswith('how'):
                 q_dict['how'].append(item)
+            elif question.startswith('which') or \
+                    question.startswith('in which') or \
+                    question.startswith('on which') or \
+                    question.startswith('at which') or \
+                    question.startswith('under which') or \
+                    question.startswith('about which') or \
+                    question.startswith('of which'):
+                q_dict['which'].append(item)
             else:
                 q_dict['others'].append(item)
 
@@ -130,6 +153,8 @@ def data_stats(parsed_data_path):
     s += stat_items(q_dict['when'], num_questions, num_answers)
     s += '### Where\n'
     s += stat_items(q_dict['where'], num_questions, num_answers)
+    s += '### Which\n'
+    s += stat_items(q_dict['which'], num_questions, num_answers)
     s += '### How\n'
     s += stat_items(q_dict['how'], num_questions, num_answers)
     s += '### Others\n'
@@ -145,6 +170,7 @@ if __name__ == '__main__':
     data_paths = [
         'narrativeQA/narrativeQA-dev.json',
         'naturalQuestions/naturalQuestions-dev.json',
+        'naturalQuestions/naturalQuestions-dev-clean.json',
         'quasarT/quasarT-dev.json',
         'searchQA/searchQA-dev.json',
         'squad2/squad2-dev.json',
