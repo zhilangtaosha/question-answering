@@ -1,3 +1,4 @@
+* Average Number of Answers per Question: 2.1
 ##### Questions <7830>:
 ##### Tokens / Characters 
 * mean: 9.3 / 49.0

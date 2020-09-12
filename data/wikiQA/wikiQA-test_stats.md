@@ -1,3 +1,4 @@
+* Average Number of Answers per Question: 1.2
 ##### Questions <243>:
 ##### Tokens / Characters 
 * mean: 6.3 / 32.7

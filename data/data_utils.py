@@ -117,6 +117,7 @@ def data_stats(parsed_data_path):
             else:
                 q_dict['others'].append(item)
 
+    s += f'* Average Number of Answers per Question: {round(num_answers/num_questions, 1)}\n'
     s += stat_items(items)
     # 5Ws + 1H
     s += '### Who\n'
@@ -148,6 +149,7 @@ if __name__ == '__main__':
         'searchQA/searchQA-dev.json',
         'squad2/squad2-dev.json',
         'triviaQA/triviaQA-dev.json',
+        'wikiQA/wikiQA-dev.json',
         'wikiQA/wikiQA-test.json'
     ]
     for p in tqdm(data_paths):

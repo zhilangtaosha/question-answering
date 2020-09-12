@@ -1,3 +1,4 @@
+* Average Number of Answers per Question: 1.0
 ##### Questions <3000>:
 ##### Tokens / Characters 
 * mean: 10.6 / 55.3
