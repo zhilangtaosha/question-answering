@@ -63,6 +63,7 @@ The datasets marked as bold are considered good candidates for open QA.
         - factoid questions from quiz-league website
         - evidence from Wikipedia articles, web domain
     - SOTA:
+        + EM=80.86, F1=84.50 [Official leaderboard](https://competitions.codalab.org/competitions/17208#results) 
         + MemoReader (Back et al., 2018), 
         + T5-11B (Roberts et al., 2020) + SSM (Guu et al., 2020), EM=60.5
         + Dense retrieval (Karpukhin et al., 2020), EM=57.9
@@ -77,6 +78,8 @@ The datasets marked as bold are considered good candidates for open QA.
         - each question is accompanied with both long and short contexts
     - Websites:
         - [Github repo](https://github.com/bdhingra/quasar)
+    - SOTA:
+        - EM=42.3, F1=49.6 [Leaderboard](https://paperswithcode.com/sota/open-domain-question-answering-on-quasar?p=gated-attention-readers-for-text)
     - Side notes:
         - The Quasar-S consists of cloze style questions over software entities, irrelevant for QA
         - The Quasar-T consists of trivia questions.
@@ -89,6 +92,8 @@ The datasets marked as bold are considered good candidates for open QA.
         - dev: 21k;test: 43k; train:151k
     - Websites:
         - [Github repo](https://github.com/nyu-dl/dl4ir-searchQA)
+    - SOTA:
+        - EM=56.8, F1=63.6 [Leaderboard](https://paperswithcode.com/sota/open-domain-question-answering-on-searchqa?p=multi-granular-sequence-encoding-via-dilated)
     - Side notes:
         +  aims to emulate the search and retrieval process in
 question answering applications
