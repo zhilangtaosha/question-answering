@@ -3,3 +3,4 @@ nltk==3.5
 wikiextractor
 ijson
 ipywidgets
+plotly
