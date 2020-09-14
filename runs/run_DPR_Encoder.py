@@ -3,9 +3,8 @@ This script has the sole purpose of taking all the documents from ElasticSearch
 and encode them with DPR encoder into vectors, then store these vectors into a file.
 """
 
-import os, sys, time
+import os, sys
 import numpy as np
-import json
 import elasticsearch
 from elasticsearch.helpers import scan
 from tqdm import tqdm
@@ -16,6 +15,7 @@ from params import *
 from eval import *
 
 
+ES_INDEX_NAME = 'wikipedia_paragraph'
 BATCH_COUNT = 105
 
 

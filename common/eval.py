@@ -76,7 +76,7 @@ def reader_match_max(metric_fn, pred_answer: str, gold_answers: List[str]) -> fl
     return max(scores_for_ground_truths)
 
 
-def recall_ranks(answer: str, retrieved_documents: List[str]) -> List[int]:
+def retrieval_ranks(answer: str, retrieved_documents: List[str]) -> List[int]:
     """
     :param answer:
     :param retrieved_documents:
@@ -91,7 +91,7 @@ def recall_ranks(answer: str, retrieved_documents: List[str]) -> List[int]:
     return ranks
 
 
-def recall_ranks_merge(answers: List[str], retrieved_documents: List[str]) -> List[int]:
+def retrieval_ranks_merge(answers: List[str], retrieved_documents: List[str]) -> List[int]:
     """
     :param answers: typically a set of gold answers to the same question
     :param retrieved_documents:
@@ -101,7 +101,7 @@ def recall_ranks_merge(answers: List[str], retrieved_documents: List[str]) -> Li
         raise Exception('Incorrect format of the gold_answers parameter')
     ranks = []
     for a in answers:
-        ranks += recall_ranks(a, retrieved_documents)
+        ranks += retrieval_ranks(a, retrieved_documents)
     return list(set(ranks))
 
 

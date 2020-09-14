@@ -1,5 +1,7 @@
 from os.path import join
+import argparse
 
+# ========================= Default parameters ===========================
 # Path params
 # Retriever - ElasticSearch
 ES_HOST = 'localhost'
@@ -15,12 +17,11 @@ ES_INDEX_NAME = 'wikipedia_paragraph'
 
 # Retriever - DPR
 DPR_MODEL_PATH = '../models/dpr/multi_hf_bert_base.cp'
-
 # Datasets
 DATA_DIR = join('..', 'data')
 DATASETS = [
     join(DATA_DIR, 'squad2', 'squad2-dev.json'),
-    join(DATA_DIR, 'naturalQuestions', 'naturalQuestions-dev.json'),
+    join(DATA_DIR, 'naturalQuestions', 'naturalQuestions-dev-clean.json'),
     join(DATA_DIR, 'quasarT', 'quasarT-dev.json'),
     join(DATA_DIR, 'searchQA', 'searchQA-dev.json'),
     join(DATA_DIR, 'triviaQA', 'triviaQA-dev.json'),
@@ -34,9 +35,23 @@ READERS = [
 
 # Model params
 USE_GPU = True
-RETRIEVER_ES_TOP_K = 20
+RETRIEVER_ES_TOP_K = 100
 RETRIEVER_DPR_TOP_K = 20
 READER_TOP_K = 1
 FAISS_INDEX_DIMENSION = 768
 SEED = 42
 SUBSET = 1000
+
+# ========================= Args ===========================
+parser = argparse.ArgumentParser()
+parser.add_argument('--index', default=ES_INDEX_NAME, type=str, required=False)
+parser.add_argument('--host', default=ES_HOST, type=str, required=False)
+parser.add_argument('--port', default=ES_PORT, type=str, required=False)
+parser.add_argument('--use_gpu', default=USE_GPU, type=bool, required=False)
+parser.add_argument('--retriever_es_k', default=RETRIEVER_ES_TOP_K, type=int, required=False)
+parser.add_argument('--retriever_dpr_k', default=RETRIEVER_DPR_TOP_K, type=int, required=False)
+parser.add_argument('--reader_k', default=READER_TOP_K, type=int, required=False)
+parser.add_argument('--faiss_dimension', default=FAISS_INDEX_DIMENSION, type=int, required=False)
+parser.add_argument('--seed', default=SEED, type=int, required=False)
+parser.add_argument('--subset', default=SUBSET, type=int, required=False)
+args = parser.parse_args()

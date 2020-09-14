@@ -1,17 +1,27 @@
 import os, sys, time
 import numpy as np
-import json
 from tqdm import tqdm
 
 sys.path.insert(1, os.path.join('..', 'common'))
 from item_qa import ItemQA2
 from utils import *
-from params import *
 from eval import *
+from params import args, READERS, DATASETS, DPR_MODEL_PATH
+
+ES_HOST = args.host
+ES_PORT = args.port
+ES_INDEX_NAME = args.index
+USE_GPU = args.use_gpu
+RETRIEVER_ES_TOP_K = args.retriever_es_k
+RETRIEVER_DPR_TOP_K = args.retriever_dpr_k
+READER_TOP_K = args.reader_k
+FAISS_INDEX_DIMENSION = args.faiss_dimension
+SEED = args.seed
+SUBSET = args.subset
 
 
 def get_output_filename(reader_path, data_path):
-    retriever_suffix = ES_INDEX_NAME.replace('wikipedia_', '')
+    retriever_suffix = ES_INDEX_NAME.replace('wikipedia', '')
     retriever = 'BM25' + retriever_suffix
     reader = os.path.basename(reader_path)
     data = os.path.basename(data_path).replace('.json', '')
@@ -54,7 +64,7 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index
         t = time.time() - start_time
         faiss_index.reset()
         # eval
-        es_ranks = recall_ranks_merge(gold_answers, es_doc_texts)
+        es_ranks = retrieval_ranks_merge(gold_answers, es_doc_texts)
         dpr_ranks = recall_ranks_convert(es_ranks, I[0])
         f1, p, r = reader_f1_max(pred_answer, gold_answers)
         em = reader_match_max(exact_match_score, pred_answer, gold_answers)

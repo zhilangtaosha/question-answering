@@ -5,19 +5,21 @@ from tqdm import tqdm
 sys.path.insert(1, os.path.join('..', 'common'))
 from item_qa import ItemQA2
 from utils import *
-from params import *
 from eval import *
+from params import args, READERS, DATASETS
 
-DATA_DIR = join('..', 'data')
-DATASETS = [
-    join(DATA_DIR, 'naturalQuestions', 'naturalQuestions-dev-clean.json')
-]
-RETRIEVER_ES_TOP_K = 20
+ES_HOST = args.host
+ES_PORT = args.port
+ES_INDEX_NAME = args.index
+USE_GPU = args.use_gpu
+RETRIEVER_ES_TOP_K = args.retriever_es_k
+READER_TOP_K = args.reader_k
+SEED = args.seed
+SUBSET = args.subset
 
 
 def get_output_filename(reader_path, data_path):
-    retriever_suffix = ES_INDEX_NAME.replace('wikipedia_', '')
-    retriever = 'BM25' + retriever_suffix
+    retriever = 'BM25_' + ES_INDEX_NAME
     reader_name = os.path.basename(reader_path)
     data_name = os.path.basename(data_path).replace('.json', '')
     output_name = f'qa_{retriever}_{RETRIEVER_ES_TOP_K}_{reader_name}_{data_name}'
@@ -50,7 +52,7 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, reader):
         t = time.time() - start_time
         # eval
         es_doc_texts = [d.text for d in docs]
-        es_ranks = recall_ranks_merge(gold_answers, es_doc_texts)
+        es_ranks = retrieval_ranks_merge(gold_answers, es_doc_texts)
         f1, p, r = reader_f1_max(pred_answer, gold_answers)
         em = reader_match_max(exact_match_score, pred_answer, gold_answers)
 
@@ -177,4 +179,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    pass
