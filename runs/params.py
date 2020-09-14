@@ -4,7 +4,14 @@ from os.path import join
 # Retriever - ElasticSearch
 ES_HOST = 'localhost'
 ES_PORT = 9200
-ES_INDEX_NAME = 'wikipedia_paragraph' # 'wikipedia' # 'wikipedia_en' # 'wikipedia_paragraph'
+# 'wikipedia': original document-level index
+# 'wikipedia_en': alternative name to the document-level index
+# 'wikipedia_paragraph': paragraph-level index
+# 'wikipedia_50': fixed-length 50 tokens index (no stride)
+# 'wikipedia_100': fixed-length 100 tokens index (no stride)
+# 'wikipedia_200': fixed-length 200 tokens index (no stride)
+# 'wikipedia_100_stride_50': fixed-length 100 tokens index with stride 50
+ES_INDEX_NAME = 'wikipedia_paragraph'
 
 # Retriever - DPR
 DPR_MODEL_PATH = '../models/dpr/multi_hf_bert_base.cp'

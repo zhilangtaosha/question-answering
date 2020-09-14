@@ -16,10 +16,13 @@ from params import *
 from eval import *
 
 
+BATCH_COUNT = 105
+
+
 class BatchWriter:
     def __init__(self, batch_size=1000, output_dir='', output_file_prefix='batch_'):
         self.items = []
-        self.count = 28
+        self.count = BATCH_COUNT+1
         self.batch_size = batch_size
         self.output_dir = output_dir
         self.output_file_prefix = output_file_prefix
@@ -107,7 +110,7 @@ def main():
         )
         for item in tqdm(es_response, total=total_docs):
             count += 1
-            if count >= 27*writer_batch_size:
+            if count >= BATCH_COUNT*writer_batch_size:
                 _id = item['_id']
                 doc_ids.append(_id)
                 text = item['_source']['text']

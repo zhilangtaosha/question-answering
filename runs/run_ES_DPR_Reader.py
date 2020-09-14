@@ -9,18 +9,10 @@ from utils import *
 from params import *
 from eval import *
 
-DATA_DIR = join('..', 'data')
-DATASETS = [
-    join(DATA_DIR, 'squad2', 'squad2-dev.json'),
-    join(DATA_DIR, 'naturalQuestions', 'naturalQuestions-dev-clean.json'),
-    join(DATA_DIR, 'wikiQA', 'wikiQA-test.json'),
-]
-RETRIEVER_ES_TOP_K = 1000
-RETRIEVER_DPR_TOP_K = 20
-
 
 def get_output_filename(reader_path, data_path):
-    retriever = 'BM25'
+    retriever_suffix = ES_INDEX_NAME.replace('wikipedia_', '')
+    retriever = 'BM25' + retriever_suffix
     reader = os.path.basename(reader_path)
     data = os.path.basename(data_path).replace('.json', '')
     output_name = f'qa_{retriever}_{RETRIEVER_ES_TOP_K}_DPR_{RETRIEVER_DPR_TOP_K}_{reader}_{data}'
