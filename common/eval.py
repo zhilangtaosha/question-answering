@@ -160,6 +160,7 @@ def precision_at_k(ranks_list: List[List[int]], k:int) -> float:
     """
     This function evaluates the precision of a retriever at rank k:
     the average percentage of documents in which the answer of a question appears, out of top K retrieved documents
+    (Alternative: the average percentage of tokens that are part of the answer of a question, out of top K retrieved documents)
     :param ranks_list:
     :param k:
     :return:

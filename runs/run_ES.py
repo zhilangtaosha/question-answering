@@ -30,23 +30,27 @@ def retrieve_and_evaluate(gold_qa_entry, retriever_es):
     gold_answers = gold_qa_entry['answers']
     if len(gold_answers) == 0:
         return None
-    question_id = gold_qa_entry['question_id']
-    question = gold_qa_entry['question']
-    es_ranks = []
-    t = 0
-    start_time = time.time()
-    docs = retriever_es.retrieve(question, top_k=RETRIEVER_ES_TOP_K)
-    if docs:
-        t = time.time() - start_time
-        es_doc_texts = [d.text for d in docs]
-        es_ranks = retrieval_ranks_merge(gold_answers, es_doc_texts)
+    try:
+        question_id = gold_qa_entry['question_id']
+        question = gold_qa_entry['question']
+        es_ranks = []
+        t = 0
+        start_time = time.time()
+        docs = retriever_es.retrieve(question, top_k=RETRIEVER_ES_TOP_K)
+        if docs:
+            t = time.time() - start_time
+            es_doc_texts = [d.text for d in docs]
+            es_ranks = retrieval_ranks_merge(gold_answers, es_doc_texts)
 
-    item = ItemQA2(question_id, question,
-                   bm25_ranks=es_ranks,
-                   t=t)
-    for g_answer in gold_answers:
-        item.add_gold_answer(g_answer)
-    return item
+        item = ItemQA2(question_id, question,
+                       bm25_ranks=es_ranks,
+                       t=t)
+        for g_answer in gold_answers:
+            item.add_gold_answer(g_answer)
+        return item
+    except Exception as e:
+        print(e)
+        return None
 
 
 def summarize(output_filename: str):
@@ -115,9 +119,10 @@ def main():
             data = load_qa_data(data_path, seed=SEED, subset=SUBSET)
             logger.info(f'{len(data)} QA entries loaded')
             for qa in tqdm(data):
-                item = retrieve_and_evaluate(qa, retriever_es)
-                if item is not None:
-                    output_items.append(item)
+                if count >= 0:
+                    item = retrieve_and_evaluate(qa, retriever_es)
+                    if item is not None:
+                        output_items.append(item)
                 count += 1
             save_output(output_filename, output_items, logger)
 

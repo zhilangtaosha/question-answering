@@ -9,6 +9,11 @@ from haystack.reader.transformers import TransformersReader
 from haystack.utils import print_answers
 
 
+def load_json(input_filename):
+    with open(input_filename, 'r', encoding='utf8') as f:
+        return json.load(f)
+
+
 def save_json(obj_to_save, output_filename):
     with open(output_filename, 'w', encoding='utf8') as out:
         json.dump(obj_to_save, out, ensure_ascii=False)
