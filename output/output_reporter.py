@@ -257,7 +257,6 @@ def plot_inter_index_performance(dataset='squad2'):
         data['em_mean'].append(np.mean(ems))
         data['em_sd'].append(np.std(ems))
 
-    df = DataFrame(data)
     fig = make_subplots(rows=1, cols=1, specs=[[{"secondary_y": True}]])
     f1_error_y = dict(
         type='data',  # value of error bar given in data coordinates
@@ -303,6 +302,48 @@ def plot_inter_index_performance(dataset='squad2'):
     fig.update_xaxes(showline=True, linewidth=2, linecolor='darkgrey', gridwidth=1, gridcolor='lightgrey')
     fig.update_yaxes(showline=True, linewidth=2, linecolor='darkgrey', gridwidth=1, gridcolor='lightgray')
     fig.show()
+
+
+def plot_inter_index_performance_dist(dataset='squad2', plot_type='box'):
+    """
+    Given a dataset, show its performance distributions of F1, EM over different indexes
+    :param dataset:
+    :param plot_type: 'box' | 'strip' | 'violin'
+    :return:
+    """
+    dataset = dataset + '-dev' if 'natural' not in dataset else dataset + '-dev-clean'
+    if 'merged' in dataset:
+        dataset = 'merged'
+    index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200']
+    data = {
+        'index': [],
+        'f1': [],
+        'em': []
+    }
+    json_paths = []
+    for t in index_types:
+        directory = os.path.join(f'wikipedia{t}', 'bm25+electra')
+        found = find_filename(directory, [dataset, '.json'])
+        assert len(found) == 1
+        json_paths.append(os.path.join(directory, found[0]))
+    for j in json_paths:
+        index = j.split('/')[0]
+        items = load_json(j)
+        f1s = [item['f1'] for item in items]
+        ems = [item['em'] for item in items]
+        for i, _ in enumerate(items):
+            data['index'].append(index)
+            data['f1'].append(f1s[i])
+            data['em'].append(ems[i])
+
+    df = DataFrame(data)
+    plot_func = px.box
+    if plot_type == 'strip':
+        plot_func = px.strip
+    elif plot_type == 'violin':
+        plot_func = px.violin
+    fig_f1 = plot_func(df, x='index', y='f1')
+    fig_f1.show()
 
 
 def plot_intra_index_performance(index='wikipedia_100_stride_50'):
