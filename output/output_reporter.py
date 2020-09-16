@@ -96,6 +96,7 @@ class OutputReporterAgg:
         self.cache = None
         self.reporters: List[OutputReporter] = []
         for _path in tqdm(json_paths):
+            print(_path)
             # caching
             reporter = OutputReporter(_path)
             reporter.get_recalls_precisions()
@@ -150,10 +151,10 @@ def merge_outputs(json_paths: List[str], merged_filename):
 
 
 def show_plots():
-    index_types = ['50', '100', '100_stride_50', '150', '200', 'paragraph']
+    index_types = ['_50', '_100', '_100_stride_50', '_150', '_200', '_paragraph']
     json_paths = []
     for t in index_types:
-        json_paths.append(f'wikipedia_{t}/qa_BM25_wikipedia_{t}_5000_merged.json')
+        json_paths.append(f'wikipedia{t}/qa_BM25_wikipedia{t}_5000_merged.json')
     agg = OutputReporterAgg(json_paths)
     agg.plot_recalls()
     agg.plot_precisions()

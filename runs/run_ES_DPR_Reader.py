@@ -21,11 +21,10 @@ SUBSET = args.subset
 
 
 def get_output_filename(reader_path, data_path):
-    retriever_suffix = ES_INDEX_NAME.replace('wikipedia', '')
-    retriever = 'BM25' + retriever_suffix
+    retriever = 'BM25' + ES_INDEX_NAME
     reader = os.path.basename(reader_path)
     data = os.path.basename(data_path).replace('.json', '')
-    output_name = f'qa_{retriever}_{RETRIEVER_ES_TOP_K}_DPR_{RETRIEVER_DPR_TOP_K}_{reader}_{data}'
+    output_name = f'qa_<{retriever}>_{RETRIEVER_ES_TOP_K}_DPR_{RETRIEVER_DPR_TOP_K}_<{reader}>_{data}'
     if SUBSET is not None:
         output_name += f'_{SUBSET}'
     return output_name + '.json'
