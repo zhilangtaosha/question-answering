@@ -1,7 +1,13 @@
-### Performance Summary
-This folder contains evaluation scripts, which run full pipelines to 
+# Performance Summary
+This folder contains run scripts, which run full pipelines to 
 answer open domain questions.
 
+------
+## Performance across indexes
+
+
+------
+## Performance on individual indexes
 #### wikipedia
 
 * number of tokens per document:

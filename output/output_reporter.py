@@ -1,7 +1,11 @@
 import sys, os
+import numpy as np
 import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from pandas import DataFrame
 from tqdm.notebook import tqdm
+from typing import List
 
 sys.path.insert(1, os.path.join('..', 'common'))
 from utils import *
@@ -193,16 +197,155 @@ def merge_outputs(json_paths: List[str], merged_filename):
         save_json(items, merged_filename)
 
 
-def show_plots(adjusted=True):
-    index_types = ['_50', '_100', '_100_stride_50', '_150', '_200', '_paragraph']
+def find_filename(directory: str, constraints: List[str]):
+    result = []
+    if os.path.isdir(directory):
+        fs = os.listdir(directory)
+        for f in fs:
+            match = True
+            for c in constraints:
+                if c not in f:
+                    match = False
+                    break
+            if match:
+                result.append(f)
+    return result
+
+
+def plot_pr(adjusted=True):
+    index_types = ['', '_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200']
     json_paths = []
     for t in index_types:
-        json_paths.append(f'wikipedia{t}/qa_BM25_wikipedia{t}_5000_merged.json')
+        json_paths.append(f'wikipedia{t}/bm25/qa_BM25_wikipedia{t}_5000_merged.json')
     agg = OutputReporterAgg(json_paths)
     agg.plot_recalls(adjusted=adjusted)
     agg.plot_precisions(adjusted=adjusted)
     agg.plot_recalls_precisions(adjusted=adjusted)
 
 
+def plot_inter_index_performance(dataset='squad2'):
+    """
+    Given a dataset, show its performance F1, EM over different indexes
+    :param dataset:
+    :return:
+    """
+    dataset = dataset + '-dev' if 'natural' not in dataset else dataset + '-dev-clean'
+    if 'merged' in dataset:
+        dataset = 'merged'
+    index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200']
+    data = {
+        'index': [],
+        'f1_mean': [],
+        'f1_sd': [],
+        'em_mean': [],
+        'em_sd': []
+    }
+    json_paths = []
+    for t in index_types:
+        directory = os.path.join(f'wikipedia{t}', 'bm25+electra')
+        found = find_filename(directory, [dataset, '.json'])
+        assert len(found) == 1
+        json_paths.append(os.path.join(directory, found[0]))
+    for j in json_paths:
+        index = j.split('/')[0]
+        items = load_json(j)
+        f1s = [item['f1'] for item in items]
+        ems = [item['em'] for item in items]
+        data['index'].append(index)
+        data['f1_mean'].append(np.mean(f1s))
+        data['f1_sd'].append(np.std(f1s))
+        data['em_mean'].append(np.mean(ems))
+        data['em_sd'].append(np.std(ems))
+
+    df = DataFrame(data)
+    fig = make_subplots(rows=1, cols=1, specs=[[{"secondary_y": True}]])
+    f1_error_y = dict(
+        type='data',  # value of error bar given in data coordinates
+        array=data['f1_sd'],
+        color='lightsteelblue',
+        visible=True)
+    em_error_y = dict(
+        type='data',  # value of error bar given in data coordinates
+        array=data['em_sd'],
+        color='lightcoral',
+        visible=True)
+    marker = dict(size=10, color="steelblue")
+    line = dict(width=2, color='lightcoral')
+    fig.add_trace(
+        go.Scatter(x=data['index'], y=data['f1_mean'],
+                   mode='lines+markers',
+                   error_y=f1_error_y,
+                   marker=marker,
+                   name='F1'),
+        row=1, col=1
+    )
+    fig.add_trace(
+        go.Scatter(x=data['index'], y=data['em_mean'],
+                   mode='lines+markers',
+                   # error_y=em_error_y,
+                   line=line,
+                   name='EM'),
+        row=1, col=1,
+        secondary_y=True
+    )
+
+    # Add figure title
+    fig.update_layout(
+        title_text="F1 and EM over Indexes"
+    )
+    # Set x-axis title
+    fig.update_xaxes(title_text="<b>Index</b>")
+    # Set y-axes titles, range can be adjusted by e.g. range=[-0.1, 1]
+    fig.update_yaxes(title_text="<b>F1</b>", secondary_y=False)
+    fig.update_yaxes(title_text="<b>Exact Match</b>", secondary_y=True)
+
+    fig.update_layout(plot_bgcolor='white')
+    fig.update_xaxes(showline=True, linewidth=2, linecolor='darkgrey', gridwidth=1, gridcolor='lightgrey')
+    fig.update_yaxes(showline=True, linewidth=2, linecolor='darkgrey', gridwidth=1, gridcolor='lightgray')
+    fig.show()
+
+
+def plot_intra_index_performance(index='wikipedia_100_stride_50'):
+    """
+    Given an index, show the performances over different datasets
+    :param dataset:
+    :return:
+    """
+    pass
+    # dataset = dataset + '-dev' if 'natural' not in dataset else dataset + '-dev-clean'
+    # if 'merged' in dataset:
+    #     dataset = 'merged'
+    # index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200']
+    # data = {
+    #     'index': [],
+    #     'f1_mean': [],
+    #     'f1_sd': [],
+    #     'em_mean': [],
+    #     'em_sd': []
+    # }
+    # json_paths = []
+    # for t in index_types:
+    #     directory = os.path.join(f'wikipedia{t}', 'bm25+electra')
+    #     found = find_filename(directory, [dataset, '.json'])
+    #     assert len(found) == 1
+    #     json_paths.append(os.path.join(directory, found[0]))
+    # for j in json_paths:
+    #     index = j.split('/')[0]
+    #     items = load_json(j)
+    #     f1s = [item['f1'] for item in items]
+    #     ems = [item['em'] for item in items]
+    #     data['index'].append(index)
+    #     data['f1_mean'].append(np.mean(f1s))
+    #     data['f1_sd'].append(np.std(f1s))
+    #     data['em_mean'].append(np.mean(ems))
+    #     data['em_sd'].append(np.std(ems))
+    #
+    # df = DataFrame(data)
+    # fig_f1 = px.scatter(df, x='index', y='f1_mean', error_y='f1_sd', title='F1', template='plotly_white')
+    # fig_f1.show()
+    # fig_em = px.scatter(df, x='index', y='em_mean', error_y='em_sd', title='EM', template='plotly_white')
+    # fig_em.show()
+
+
 if __name__ == '__main__':
-    show_plots()
+    pass
