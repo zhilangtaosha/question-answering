@@ -223,7 +223,7 @@ def plot_pr(adjusted=True):
     agg.plot_recalls_precisions(adjusted=adjusted)
 
 
-def plot_inter_index_performance(dataset='squad2'):
+def plot_inter_index_performance(dataset='triviaQA'):
     """
     Given a dataset, show its performance F1, EM over different indexes
     :param dataset:
@@ -304,7 +304,7 @@ def plot_inter_index_performance(dataset='squad2'):
     fig.show()
 
 
-def plot_inter_index_performance_dist(dataset='squad2', plot_type='box'):
+def plot_inter_index_performance_dist(dataset='triviaQA', plot_type='box'):
     """
     Given a dataset, show its performance distributions of F1, EM over different indexes
     :param dataset:
