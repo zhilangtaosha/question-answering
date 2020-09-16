@@ -1,5 +1,4 @@
 import os, sys, time
-import numpy as np
 from tqdm import tqdm
 
 sys.path.insert(1, os.path.join('..', 'common'))
@@ -179,5 +178,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    pass
+    main()
