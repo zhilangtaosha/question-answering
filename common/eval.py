@@ -122,7 +122,7 @@ def recall_ranks_convert(target_ranks: List[int], reference_ranks: List[int]) ->
     5 -> 5
 
     Now suppose we have a list of target ranks that still follows the original ranks numbers, say
-    [0, 3, 5], and we want to convert it according to the reference ranks, the we would have: [2, 1, 5]
+    [0, 3, 5], and we want to convert it according to the reference ranks, then we would have: [2, 1, 5]
     :param target_ranks:
     :param reference_ranks:
     :return:
@@ -160,7 +160,6 @@ def precision_at_k(ranks_list: List[List[int]], k:int) -> float:
     """
     This function evaluates the precision of a retriever at rank k:
     the average percentage of documents in which the answer of a question appears, out of top K retrieved documents
-    (Alternative: the average percentage of tokens that are part of the answer of a question, out of top K retrieved documents)
     :param ranks_list:
     :param k:
     :return:

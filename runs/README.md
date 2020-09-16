@@ -2,6 +2,16 @@
 This folder contains evaluation scripts, which run full pipelines to 
 answer open domain questions.
 
+#### wikipedia
+
+* number of tokens per document:
+    - mean = 372.3
+    - std = 778.5
+    - min = 1
+    - max = 62,206
+    - median = 143.0
+    
+    
 #### wikipedia_paragraph
 
 * number of tokens per paragraph:
