@@ -16,7 +16,7 @@ from eval import *
 
 
 ES_INDEX_NAME = 'wikipedia_paragraph'
-BATCH_COUNT = 105
+BATCH_COUNT = 184
 
 
 class BatchWriter:
