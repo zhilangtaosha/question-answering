@@ -232,7 +232,7 @@ def plot_inter_index_performance(dataset='triviaQA'):
     dataset = dataset + '-dev' if 'natural' not in dataset else dataset + '-dev-clean'
     if 'merged' in dataset:
         dataset = 'merged'
-    index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200']
+    index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200', '']
     data = {
         'index': [],
         'f1_mean': [],
@@ -314,7 +314,7 @@ def plot_inter_index_performance_dist(dataset='triviaQA', plot_type='box'):
     dataset = dataset + '-dev' if 'natural' not in dataset else dataset + '-dev-clean'
     if 'merged' in dataset:
         dataset = 'merged'
-    index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200']
+    index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200', '']
     data = {
         'index': [],
         'f1': [],
