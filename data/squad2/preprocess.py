@@ -24,10 +24,12 @@ def parse(input_filename, output_filename):
         total_count = 0
         obj = json.load(f)
         data = obj['data']
+        context_tokens_counts = []
         for entry in tqdm(data):
             title = entry['title']
             paragraphs = entry['paragraphs']
             for p in paragraphs:
+                context_tokens_counts.append(len(p['context'].split()))
                 for qa in p['qas']:
                     answers = qa['answers']
                     if len(answers) > 0:
@@ -46,6 +48,13 @@ def parse(input_filename, output_filename):
         print(f'Finished processing {input_filename}')
         print(f'Number of QA pairs: {total_count}')
         print(f'Number of unique questions: {len(items)}')
+        print(f'Number of contexts: ', len(context_tokens_counts))
+        print(f'Number of tokens per context: ')
+        print(f'    mean={np.mean(context_tokens_counts)}')
+        print(f'    min={np.min(context_tokens_counts)}')
+        print(f'    max={np.max(context_tokens_counts)}')
+        print(f'    std={np.std(context_tokens_counts)}')
+        print(f'    median={np.median(context_tokens_counts)}')
         print('---------------------------------------')
 
 
@@ -53,19 +62,33 @@ if __name__ == '__main__':
     original_data_dir = join('original')
     inputs = [join(original_data_dir, 'dev-v2.0.json'),
               join(original_data_dir, 'train-v2.0.json')]
-    outputs = ['squad2-dev.json', 'squad2-train.json']
+    outputs = ['squad2-dev-foobar.json', 'squad2-train-foobar.json']
     for i, o in zip(inputs, outputs):
         parse(i, o)
 
     '''
     Expected output:
+    
     ---------------------------------------
-    Finished processing original/dev-v2.0.json
-    Number of QA pairs: 20,302
-    Number of unique questions: 5,928
-    ----------------------------------------
-    Finished processing original/train-v2.0.json
-    Number of QA pairs: 86,821
-    Number of unique questions: 86,821
-    ----------------------------------------
+    Number of QA pairs: 20302
+    Number of unique questions: 5928
+    Number of contexts:  1204
+    Number of tokens per context: 
+        mean=126.57308970099668
+        min=25
+        max=629
+        std=57.437157397647965
+        median=113.0
+    ---------------------------------------
+    Number of QA pairs: 86821
+    Number of unique questions: 86821
+    Number of contexts:  19035
+    Number of tokens per context: 
+        mean=116.58550039401104
+        min=20
+        max=653
+        std=49.668850126326525
+        median=107.0
+    ---------------------------------------
+
     '''
