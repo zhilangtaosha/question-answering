@@ -223,7 +223,7 @@ def plot_pr(adjusted=True):
     agg.plot_recalls_precisions(adjusted=adjusted)
 
 
-def plot_inter_index_performance(dataset='triviaQA'):
+def plot_inter_index_performance(dataset='triviaQA', error_bar=False):
     """
     Given a dataset, show its performance F1, EM over different indexes
     :param dataset:
@@ -263,12 +263,12 @@ def plot_inter_index_performance(dataset='triviaQA'):
         type='data',  # value of error bar given in data coordinates
         array=data['f1_sd'],
         color='lightsteelblue',
-        visible=True)
+        visible=True) if error_bar else None
     em_error_y = dict(
         type='data',  # value of error bar given in data coordinates
         array=data['em_sd'],
         color='lightcoral',
-        visible=True)
+        visible=True) if error_bar else None
     marker = dict(size=10, color="steelblue")
     line = dict(width=2, color='lightcoral')
     fig.add_trace(
@@ -282,7 +282,7 @@ def plot_inter_index_performance(dataset='triviaQA'):
     fig.add_trace(
         go.Scatter(x=data['index'], y=data['em_mean'],
                    mode='lines+markers',
-                   # error_y=em_error_y,
+                   error_y=em_error_y,
                    line=line,
                    name='EM'),
         row=1, col=1,
@@ -291,13 +291,15 @@ def plot_inter_index_performance(dataset='triviaQA'):
 
     # Add figure title
     fig.update_layout(
-        title_text="F1 and EM over Indexes"
+        title_text=f"F1 and EM over indexes (dataset: {dataset})"
     )
     # Set x-axis title
     fig.update_xaxes(title_text="<b>Index</b>")
     # Set y-axes titles, range can be adjusted by e.g. range=[-0.1, 1]
-    fig.update_yaxes(title_text="<b>F1</b>", secondary_y=False)
-    fig.update_yaxes(title_text="<b>Exact Match</b>", secondary_y=True)
+    max_val = max(data['f1_mean'] + data['em_mean']) * 1.1
+    min_val = min(data['f1_mean'] + data['em_mean']) * 0.9
+    fig.update_yaxes(title_text="<b>F1</b>", secondary_y=False, range=[min_val, max_val])
+    fig.update_yaxes(title_text="<b>Exact Match</b>", secondary_y=True, range=[min_val, max_val])
 
     fig.update_layout(plot_bgcolor='white')
     fig.update_xaxes(showline=True, linewidth=2, linecolor='darkgrey', gridwidth=1, gridcolor='lightgrey')
@@ -316,6 +318,7 @@ def plot_inter_index_performance_dist(dataset='triviaQA', plot_type='box'):
     if 'merged' in dataset:
         dataset = 'merged'
     index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200', '']
+    index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200']
     data = {
         'index': [],
         'f1': [],
@@ -347,46 +350,80 @@ def plot_inter_index_performance_dist(dataset='triviaQA', plot_type='box'):
     fig_f1.show()
 
 
-def plot_intra_index_performance(index='wikipedia_100_stride_50'):
+def plot_intra_index_performance(index='wikipedia_100_stride_50', error_bar=False):
     """
     Given an index, show the performances over different datasets
     :param dataset:
     :return:
     """
-    pass
-    # dataset = dataset + '-dev' if 'natural' not in dataset else dataset + '-dev-clean'
-    # if 'merged' in dataset:
-    #     dataset = 'merged'
-    # index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200']
-    # data = {
-    #     'index': [],
-    #     'f1_mean': [],
-    #     'f1_sd': [],
-    #     'em_mean': [],
-    #     'em_sd': []
-    # }
-    # json_paths = []
-    # for t in index_types:
-    #     directory = os.path.join(f'wikipedia{t}', 'bm25+electra')
-    #     found = find_filename(directory, [dataset, '.json'])
-    #     assert len(found) == 1
-    #     json_paths.append(os.path.join(directory, found[0]))
-    # for j in json_paths:
-    #     index = j.split('/')[0]
-    #     items = load_json(j)
-    #     f1s = [item['f1'] for item in items]
-    #     ems = [item['em'] for item in items]
-    #     data['index'].append(index)
-    #     data['f1_mean'].append(np.mean(f1s))
-    #     data['f1_sd'].append(np.std(f1s))
-    #     data['em_mean'].append(np.mean(ems))
-    #     data['em_sd'].append(np.std(ems))
-    #
-    # df = DataFrame(data)
-    # fig_f1 = px.scatter(df, x='index', y='f1_mean', error_y='f1_sd', title='F1', template='plotly_white')
-    # fig_f1.show()
-    # fig_em = px.scatter(df, x='index', y='em_mean', error_y='em_sd', title='EM', template='plotly_white')
-    # fig_em.show()
+    datasets = ['naturalQuestions-dev-clean', 'quasarT-dev',
+                'searchQA-dev', 'squad2-dev', 'triviaQA-dev', 'wikiQA-dev']
+    directory = os.path.join(index, 'bm25+electra')
+    data = {
+        'dataset': [],
+        'f1_mean': [],
+        'f1_sd': [],
+        'em_mean': [],
+        'em_sd': []
+    }
+    for d in datasets:
+        qa_filenames = find_filename(directory, [d, '.json'])
+        assert len(qa_filenames) == 1
+        items = load_json(os.path.join(directory, qa_filenames[0]))
+        f1s = [item['f1'] for item in items]
+        ems = [item['em'] for item in items]
+        data['dataset'].append(d.replace('-dev-clean', '').replace('-dev', ''))
+        data['f1_mean'].append(np.mean(f1s))
+        data['f1_sd'].append(np.std(f1s))
+        data['em_mean'].append(np.mean(ems))
+        data['em_sd'].append(np.std(ems))
+
+    fig = make_subplots(rows=1, cols=1, specs=[[{"secondary_y": True}]])
+    f1_error_y = dict(
+        type='data',  # value of error bar given in data coordinates
+        array=data['f1_sd'],
+        color='lightsteelblue',
+        visible=True) if error_bar else None
+    em_error_y = dict(
+        type='data',  # value of error bar given in data coordinates
+        array=data['em_sd'],
+        color='lightcoral',
+        visible=True) if error_bar else None
+    marker = dict(size=10, color="steelblue")
+    line = dict(width=2, color='lightcoral')
+    fig.add_trace(
+        go.Scatter(x=data['dataset'], y=data['f1_mean'],
+                   mode='lines+markers',
+                   error_y=f1_error_y,
+                   marker=marker,
+                   name='F1'),
+        row=1, col=1
+    )
+    fig.add_trace(
+        go.Scatter(x=data['dataset'], y=data['em_mean'],
+                   mode='lines+markers',
+                   error_y=em_error_y,
+                   line=line,
+                   name='EM'),
+        row=1, col=1,
+        secondary_y=True
+    )
+    # Add figure title
+    fig.update_layout(
+        title_text=f"F1 and EM over datasets (index: {index})"
+    )
+    # Set x-axis title
+    fig.update_xaxes(title_text="<b>Index</b>")
+    # Set y-axes titles, range can be adjusted by e.g. range=[-0.1, 1]
+    max_val = max(data['f1_mean'] + data['em_mean'])*1.1
+    min_val = min(data['f1_mean'] + data['em_mean'])*0.9
+    fig.update_yaxes(title_text="<b>F1</b>", secondary_y=False, range=[min_val, max_val])
+    fig.update_yaxes(title_text="<b>Exact Match</b>", secondary_y=True, range=[min_val, max_val])
+
+    fig.update_layout(plot_bgcolor='white')
+    fig.update_xaxes(showline=True, linewidth=2, linecolor='darkgrey', gridwidth=1, gridcolor='lightgrey')
+    fig.update_yaxes(showline=True, linewidth=2, linecolor='darkgrey', gridwidth=1, gridcolor='lightgray')
+    fig.show()
 
 
 if __name__ == '__main__':

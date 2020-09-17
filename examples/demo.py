@@ -12,7 +12,7 @@ logging.disable(logging.WARNING)
 
 HOST = 'localhost'
 PORT = 9200
-INDEX_NAME = 'wikipedia_paragraph'
+INDEX_NAME = 'wikipedia_100_stride_50'
 READER_DiR = '../models/electra-base-squad2'
 DPR_MODEL_PATH = '../models/dpr/multi_hf_bert_base.cp'
 USE_GPU = True
