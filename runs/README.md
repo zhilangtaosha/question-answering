@@ -29,8 +29,8 @@ answer open domain questions.
 
 |                  seed=42, excl.unanswerable |       NQ-dev (1000)     |   QuasarT-dev (1000)   |   SearchQA-dev (1000)  |    SQuAD2-dev (1000)   |   TriviaQA-dev (1000)  |      WikiQA-dev (126)     |
 |--------------------------------------------:|:-----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:-------------------------:|
-|                  BM25 + Electra (top 20) F1 | mean=.xxx std=.xxx      | mean=.235 std=.392     | mean=.147 std=.321     | mean=.223 std=.374     | mean=.419 std=.464     | mean=.073 std=.102        |
-|                  BM25 + Electra (top 20) EM | mean=.xxx std=.xxx      | mean=.176 std=.381     | mean=.095 std=.293     | mean=.153 std=.360     | mean=.347 std=.476     | mean=0 std=.0             |
+|                  BM25 + Electra (top 20) F1 | mean=.172 std=.324      | mean=.235 std=.392     | mean=.147 std=.321     | mean=.223 std=.374     | mean=.419 std=.464     | mean=.073 std=.102        |
+|                  BM25 + Electra (top 20) EM | mean=.102 std=.302      | mean=.176 std=.381     | mean=.095 std=.293     | mean=.153 std=.360     | mean=.347 std=.476     | mean=0 std=.0             |
 
   
 #### wikipedia_paragraph
