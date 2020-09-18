@@ -13,7 +13,7 @@ ES_PORT = 9200
 # 'wikipedia_100': fixed-length 100 tokens index (no stride)
 # 'wikipedia_200': fixed-length 200 tokens index (no stride)
 # 'wikipedia_100_stride_50': fixed-length 100 tokens index with stride 50
-ES_INDEX_NAME = 'wikipedia_paragraph'
+ES_INDEX_NAME = 'wikipedia'
 
 # Retriever - DPR
 DPR_MODEL_PATH = '../models/dpr/multi_hf_bert_base.cp'
@@ -22,10 +22,10 @@ DATA_DIR = join('..', 'data')
 DATASETS = [
     # join(DATA_DIR, 'squad2', 'squad2-dev.json'),
     join(DATA_DIR, 'naturalQuestions', 'naturalQuestions-dev-clean.json'),
-    join(DATA_DIR, 'quasarT', 'quasarT-dev.json'),
-    join(DATA_DIR, 'searchQA', 'searchQA-dev.json'),
-    join(DATA_DIR, 'triviaQA', 'triviaQA-dev.json'),
-    join(DATA_DIR, 'wikiQA', 'wikiQA-dev.json')
+    # join(DATA_DIR, 'quasarT', 'quasarT-dev.json'),
+    # join(DATA_DIR, 'searchQA', 'searchQA-dev.json'),
+    # join(DATA_DIR, 'triviaQA', 'triviaQA-dev.json'),
+    # join(DATA_DIR, 'wikiQA', 'wikiQA-dev.json')
 ]
 # Readers
 MODELS_DIR = join('..', 'models')

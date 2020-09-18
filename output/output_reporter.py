@@ -233,7 +233,7 @@ def plot_inter_index_performance(dataset='triviaQA', error_bar=False):
     if 'merged' in dataset:
         dataset = 'merged'
     index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200', '']
-    index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200']
+    # index_types = ['_50', '_paragraph', '_100', '_100_stride_50', '_150', '_200']
     data = {
         'index': [],
         'f1_mean': [],
@@ -244,7 +244,8 @@ def plot_inter_index_performance(dataset='triviaQA', error_bar=False):
     json_paths = []
     for t in index_types:
         directory = os.path.join(f'wikipedia{t}', 'bm25+electra')
-        found = find_filename(directory, [dataset, '.json'])
+        found = find_filename(directory, [dataset, '1000.json'])
+        print(found)
         assert len(found) == 1
         json_paths.append(os.path.join(directory, found[0]))
     for j in json_paths:

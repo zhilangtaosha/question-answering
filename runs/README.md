@@ -25,12 +25,12 @@ answer open domain questions.
 |                   BM25  Retrieval Precision | @5=.24 @10=.20 @20=.17  | @5=.28 @10=.24 @20=.21 | @5=.38 @10=.32 @20=.26 | @5=.21 @10=.19 @20=.16 | @5=.42 @10=.37 @20=.31 | @5=.019 @10=.011 @20=.006 |
 
 
-* Reading (yet to fill)
+* Reading
 
 |                  seed=42, excl.unanswerable |       NQ-dev (1000)     |   QuasarT-dev (1000)   |   SearchQA-dev (1000)  |    SQuAD2-dev (1000)   |   TriviaQA-dev (1000)  |      WikiQA-dev (126)     |
 |--------------------------------------------:|:-----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:-------------------------:|
-|                  BM25 + Electra (top 20) F1 | mean=.202 std=.350      | mean=.233 std=.390     | mean=.148 std=.322     | mean=.421 std=.455     | mean=.455 std=.465     | mean=.084 std=.093        |
-|                  BM25 + Electra (top 20) EM | mean=.124 std=.330      | mean=.175 std=.380     | mean=.093 std=.290     | mean=.333 std=.471     | mean=.375 std=.484     | mean=0 std=.0             |
+|                  BM25 + Electra (top 20) F1 | mean=.xxx std=.xxx      | mean=.235 std=.392     | mean=.147 std=.321     | mean=.223 std=.374     | mean=.419 std=.464     | mean=.073 std=.102        |
+|                  BM25 + Electra (top 20) EM | mean=.xxx std=.xxx      | mean=.176 std=.381     | mean=.095 std=.293     | mean=.153 std=.360     | mean=.347 std=.476     | mean=0 std=.0             |
 
   
 #### wikipedia_paragraph

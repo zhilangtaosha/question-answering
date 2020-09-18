@@ -165,9 +165,10 @@ def main():
                 data = load_qa_data(data_path, seed=SEED, subset=SUBSET)
                 logger.info(f'{len(data)} QA entries loaded')
                 for qa in tqdm(data):
-                    item = predict_and_evaluate(qa, retriever_es, reader)
-                    if item is not None:
-                        output_items.append(item)
+                    if count > 615:
+                        item = predict_and_evaluate(qa, retriever_es, reader)
+                        if item is not None:
+                            output_items.append(item)
                     count += 1
                 save_output(output_filename, output_items, logger)
 
