@@ -21,11 +21,11 @@ DPR_MODEL_PATH = '../models/dpr/multi_hf_bert_base.cp'
 DATA_DIR = join('..', 'data')
 DATASETS = [
     join(DATA_DIR, 'squad2', 'squad2-dev.json'),
-    # join(DATA_DIR, 'naturalQuestions', 'naturalQuestions-dev-clean.json'),
-    # join(DATA_DIR, 'quasarT', 'quasarT-dev.json'),
-    # join(DATA_DIR, 'searchQA', 'searchQA-dev.json'),
-    # join(DATA_DIR, 'triviaQA', 'triviaQA-dev.json'),
-    # join(DATA_DIR, 'wikiQA', 'wikiQA-dev.json')
+    join(DATA_DIR, 'naturalQuestions', 'naturalQuestions-dev-clean.json'),
+    join(DATA_DIR, 'quasarT', 'quasarT-dev.json'),
+    join(DATA_DIR, 'searchQA', 'searchQA-dev.json'),
+    join(DATA_DIR, 'triviaQA', 'triviaQA-dev.json'),
+    join(DATA_DIR, 'wikiQA', 'wikiQA-dev.json')
 ]
 # Readers
 MODELS_DIR = join('..', 'models')
