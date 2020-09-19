@@ -100,9 +100,9 @@ answer open domain questions.
 |                  seed=42, excl.unanswerable |       NQ-dev (1000)     |   QuasarT-dev (1000)   |   SearchQA-dev (1000)  |    SQuAD2-dev (1000)   |   TriviaQA-dev (1000)  |      WikiQA-dev (126)     |
 |--------------------------------------------:|:-----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:-------------------------:|
 |                      BM25  Retrieval Recall | @5=.37 @10=.46 @20=.55  | @5=.44 @10=.49 @20=.56 | @5=.58 @10=.65 @20=.71 | @5=.58 @10=.64 @20=.71 | @5=.66 @10=.61 @20=.75 | @5=.02 @10=.04 @20=.05    |
-|      BM25 + DPR (top 1000) Retrieval Recall |                         |                        |                        |                        |                        |                           |
+|      BM25 + DPR (top 1000) Retrieval Recall |                         |                        |                        | @5=.49 @10=.57 @20=.67 |                        |                           |
 |                   BM25  Retrieval Precision | @5=.16 @10=.14 @20=.12  | @5=.22 @10=.19 @20=.17 | @5=.31 @10=.27 @20=.23 | @5=.26 @10=.20 @20=.15 | @5=.39 @10=.34 @20=.29 | @5=.005 @10=.004 @20=.002 |
-|  BM25 + DPR (top 1000)  Retrieval Precision |                         |                        |                        |                        |                        |                           |
+|  BM25 + DPR (top 1000)  Retrieval Precision |                         |                        |                        | @5=.21 @10=.18 @20=.16 |                        |                           |
 
 
 * Reading
@@ -110,9 +110,9 @@ answer open domain questions.
 |                  seed=42, excl.unanswerable |       NQ-dev (1000)     |   QuasarT-dev (1000)   |   SearchQA-dev (1000)  |    SQuAD2-dev (1000)   |   TriviaQA-dev (1000)  |      WikiQA-dev (126)     |
 |--------------------------------------------:|:-----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:-------------------------:|
 |                  BM25 + Electra (top 20) F1 | mean=.202 std=.350      | mean=.233 std=.390     | mean=.148 std=.322     | mean=.421 std=.455     | mean=.455 std=.465     | mean=.084 std=.093        |
-| BM25 + DPR (top 1000) + Electra (top 20) F1 |                         |                        |                        |                        |                        |                           |
+| BM25 + DPR (top 1000) + Electra (top 20) F1 |                         |                        |                        | mean=.349 std=.433     |                        |                           |
 |                  BM25 + Electra (top 20) EM | mean=.124 std=.330      | mean=.175 std=.380     | mean=.093 std=.290     | mean=.333 std=.471     | mean=.375 std=.484     | mean=0 std=.0             |
-| BM25 + DPR (top 1000) + Electra (top 20) EM |                         |                        |                        |                        |                        |                           |
+| BM25 + DPR (top 1000) + Electra (top 20) EM |                         |                        |                        | mean=.261 std=.439     |                        |                           |
 
 
 #### wikipedia_100
