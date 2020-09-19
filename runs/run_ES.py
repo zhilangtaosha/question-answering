@@ -5,7 +5,7 @@ from tqdm import tqdm
 sys.path.insert(1, os.path.join('..', 'common'))
 from item_qa import ItemQA2
 from utils import *
-from eval import *
+from evaluation import *
 from params import args, DATASETS
 
 ES_HOST = args.host

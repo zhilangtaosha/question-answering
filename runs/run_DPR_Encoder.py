@@ -12,7 +12,7 @@ from tqdm import tqdm
 sys.path.insert(1, os.path.join('..', 'common'))
 from utils import *
 from params import *
-from eval import *
+from evaluation import *
 
 
 ES_INDEX_NAME = 'wikipedia_paragraph'

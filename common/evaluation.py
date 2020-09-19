@@ -105,7 +105,7 @@ def retrieval_ranks_merge(answers: List[str], retrieved_documents: List[str]) ->
     return list(set(ranks))
 
 
-def recall_ranks_convert(target_ranks: List[int], reference_ranks: List[int]) -> List[int]:
+def retrieval_ranks_convert(target_ranks: List[int], reference_ranks: List[int]) -> List[int]:
     """
     This function convert the target_ranks to a new list of ranks according to the reference_ranks.
 

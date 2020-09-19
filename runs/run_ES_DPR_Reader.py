@@ -5,7 +5,7 @@ from tqdm import tqdm
 sys.path.insert(1, os.path.join('..', 'common'))
 from item_qa import ItemQA2
 from utils import *
-from eval import *
+from evaluation import *
 from params import args, READERS, DATASETS, DPR_MODEL_PATH
 
 ES_HOST = args.host
@@ -21,7 +21,7 @@ SUBSET = args.subset
 
 
 def get_output_filename(reader_path, data_path):
-    retriever = 'BM25' + ES_INDEX_NAME
+    retriever = 'BM25_' + ES_INDEX_NAME
     reader = os.path.basename(reader_path)
     dataname = os.path.basename(data_path).replace('.json', '')
     output_name = f'qa_{retriever}__{RETRIEVER_ES_TOP_K}_DPR_{RETRIEVER_DPR_TOP_K}__{reader}__{dataname}'
@@ -30,13 +30,20 @@ def get_output_filename(reader_path, data_path):
     return output_name + '.json'
 
 
+def find_doc_by_id(_docs, _id):
+    for i, d in enumerate(_docs):
+        if d.id == _id:
+            return d, i
+    return None, -1
+
+
 def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index, reader, normalize=False):
     gold_answers = gold_qa_entry['answers']
     if len(gold_answers) == 0:
         return None
     question_id = gold_qa_entry['question_id']
     question = gold_qa_entry['question']
-    pred_answer = ''
+    top_pred_answer = ''
     es_ranks = []
     dpr_ranks = []
     f1 = 0
@@ -46,37 +53,61 @@ def predict_and_evaluate(gold_qa_entry, retriever_es, retriever_dpr, faiss_index
     t = 0
 
     start_time = time.time()
-    docs = retriever_es.retrieve(question, top_k=RETRIEVER_ES_TOP_K)
-    if docs:
+    es_docs = retriever_es.retrieve(question, top_k=RETRIEVER_ES_TOP_K)
+    rel_docs = []
+    if es_docs:
         q_vecs = retriever_dpr.embed_queries([question])
-        es_doc_texts = [d.text for d in docs]
+        es_doc_texts = [d.text for d in es_docs]
         if normalize:
             es_doc_texts = [normalize_text(d) for d in es_doc_texts]
         p_vecs = retriever_dpr.embed_passages(es_doc_texts)
         faiss_index.add(np.array(p_vecs))
         D, I = faiss_index.search(np.array(q_vecs), RETRIEVER_ES_TOP_K)
-        dpr_docs = [docs[I[0][i]] for i in range(RETRIEVER_DPR_TOP_K)]
+        # since we have only one query, we get the Distances from D[0] and Indices from I[0]
+        dpr_docs = [es_docs[I[0][i]] for i in range(RETRIEVER_DPR_TOP_K)]
+        dpr_distances = [D[0][i] for i in range(RETRIEVER_DPR_TOP_K)]
         prediction = reader.predict(question=question, documents=dpr_docs, top_k=READER_TOP_K)
         pred_answers = prediction['answers']
         if pred_answers:
-            pred_answer = pred_answers[0]['answer']
+            top_pred_answer = pred_answers[0]['answer']
+            for i, pred_answer in enumerate(pred_answers):
+                doc_id = pred_answer['document_id']
+                dpr_doc, dpr_rank = find_doc_by_id(dpr_docs, doc_id)
+                es_doc, bm25_rank = find_doc_by_id(es_docs, doc_id)
+                assert dpr_doc is not None
+                rel_doc_obj = {
+                    'doc_id': str(doc_id),
+                    'doc_text': dpr_doc.text,
+                    'bm25_score': dpr_doc.query_score,
+                    'bm25_rank': int(bm25_rank),
+                    'dpr_score': float(dpr_distances[dpr_rank]),
+                    'dpr_rank': int(dpr_rank),
+                    'reader_rank': i,
+                    'pred_answer': pred_answer['answer'],
+                    'pred_answer_prob': float(pred_answer['probability']),
+                    'pred_answer_start': int(pred_answer['offset_start']),
+                    'pred_answer_end': int(pred_answer['offset_end']),
+                    'wiki_doc_id': str(pred_answer['meta']['id']),
+                }
+                rel_docs.append(rel_doc_obj)
         t = time.time() - start_time
         faiss_index.reset()
         # eval
         es_ranks = retrieval_ranks_merge(gold_answers, es_doc_texts)
-        dpr_ranks = recall_ranks_convert(es_ranks, I[0])
-        f1, p, r = reader_f1_max(pred_answer, gold_answers)
-        em = reader_match_max(exact_match_score, pred_answer, gold_answers)
+        dpr_ranks = retrieval_ranks_convert(es_ranks, I[0])
+        f1, p, r = reader_f1_max(top_pred_answer, gold_answers)
+        em = reader_match_max(exact_match_score, top_pred_answer, gold_answers)
 
     item = ItemQA2(question_id, question,
                    bm25_ranks=es_ranks,
                    dense_ranks=dpr_ranks,
+                   top_docs=rel_docs,
                    f1=f1,
                    p=p,
                    r=r,
                    em=em,
                    t=t)
-    item.add_pred_answer(pred_answer)
+    item.add_pred_answer(top_pred_answer)
     for g_answer in gold_answers:
         item.add_gold_answer(g_answer)
     return item
@@ -202,7 +233,7 @@ def main():
                 data = load_qa_data(data_path, seed=SEED, subset=SUBSET)
                 logger.info(f'{len(data)} QA entries loaded')
                 for qa in tqdm(data):
-                    if count > 754:
+                    if count <2:
                         item = predict_and_evaluate(qa, retriever_es, retriever_dpr, faiss_index, reader)
                         if item is not None:
                             output_items.append(item)
