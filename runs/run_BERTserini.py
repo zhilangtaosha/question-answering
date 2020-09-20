@@ -105,18 +105,13 @@ def evaluate_bertserini(qa_path, dnom=100, ranker_field='dpr_score'):
 
 
 if __name__ == '__main__':
-    qa_path = '../output/wikipedia_100_stride_50/bm25+dpr+eletra/qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__squad2-dev_1000.json'
-    evaluate_bertserini(qa_path, dnom=100, ranker_field='bm25_score')
-    """
-    {'max_f1': 0.39830328682325594,
-     'max_f1_mu': 0.38,
-     'max_em': 0.305,
-     'max_em_mu': 0.37}
-    """
-    evaluate_bertserini(qa_path, dnom=100, ranker_field='dpr_score')
-    """
-    {'max_f1': 0.34944871712656406,
-     'max_f1_mu': 0.74,
-     'max_em': 0.263,
-     'max_em_mu': 0.92}
-    """
+    parent_folder = os.path.join('..', 'output', 'wikipedia_100_stride_50', 'bm25+dpr+eletra')
+    # filename = 'qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__squad2-dev_1000.json'
+    # filename = 'qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__naturalQuestions-dev-clean_1000.json'
+    # filename = 'qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__searchQA-dev_1000.json'
+    filename = 'qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__quasarT-dev_1000.json'
+    qa_path = os.path.join(parent_folder, filename)
+    res1 = evaluate_bertserini(qa_path, dnom=100, ranker_field='bm25_score')
+    print(res1)
+    res2 = evaluate_bertserini(qa_path, dnom=100, ranker_field='dpr_score')
+    print(res2)
