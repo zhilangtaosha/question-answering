@@ -9,7 +9,7 @@ from typing import List
 
 sys.path.insert(1, os.path.join('..', 'common'))
 from utils import *
-from eval import *
+from evaluation import *
 
 
 def plot_line(px, df, x, y, title, template='plotly_white', **kwargs):

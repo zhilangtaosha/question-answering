@@ -107,12 +107,14 @@ answer open domain questions.
 
 * Reading
 
-|                  seed=42, excl.unanswerable |       NQ-dev (1000)     |   QuasarT-dev (1000)   |   SearchQA-dev (1000)  |    SQuAD2-dev (1000)   |   TriviaQA-dev (1000)  |      WikiQA-dev (126)     |
-|--------------------------------------------:|:-----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:-------------------------:|
-|                  BM25 + Electra (top 20) F1 | mean=.202 std=.350      | mean=.233 std=.390     | mean=.148 std=.322     | mean=.421 std=.455     | mean=.455 std=.465     | mean=.084 std=.093        |
-| BM25 + DPR (top 1000) + Electra (top 20) F1 |                         |                        |                        | mean=.349 std=.433     |                        |                           |
-|                  BM25 + Electra (top 20) EM | mean=.124 std=.330      | mean=.175 std=.380     | mean=.093 std=.290     | mean=.333 std=.471     | mean=.375 std=.484     | mean=0 std=.0             |
-| BM25 + DPR (top 1000) + Electra (top 20) EM |                         |                        |                        | mean=.261 std=.439     |                        |                           |
+|                  seed=42, excl.unanswerable              |       NQ-dev (1000)     |   QuasarT-dev (1000)   |   SearchQA-dev (1000)  |    SQuAD2-dev (1000)   |   TriviaQA-dev (1000)  |      WikiQA-dev (126)     |
+|---------------------------------------------------------:|:-----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:-------------------------:|
+|                               BM25 + Electra (top 20) F1 | mean=.202 std=.350      | mean=.233 std=.390     | mean=.148 std=.322     | mean=.421 std=.455     | mean=.455 std=.465     | mean=.084 std=.093        |
+|              BM25 + DPR (top 1000) + Electra (top 20) F1 |                         |                        |                        | mean=.349 std=.433     |                        |                           |
+| BM25 + DPR (top 1000) + Electra + BERTserini (top 20) F1 |                         |                        |                        | mean=.350 mu=.74     |                        |                           |
+|                               BM25 + Electra (top 20) EM | mean=.124 std=.330      | mean=.175 std=.380     | mean=.093 std=.290     | mean=.333 std=.471     | mean=.375 std=.484     | mean=0 std=.0             |
+|              BM25 + DPR (top 1000) + Electra (top 20) EM |                         |                        |                        | mean=.261 std=.439     |                        |                           |
+| BM25 + DPR (top 1000) + Electra + BERTserini (top 20) EM |                         |                        |                        | mean=.263 mu=.92     |                        |                           |
 
 
 #### wikipedia_100
