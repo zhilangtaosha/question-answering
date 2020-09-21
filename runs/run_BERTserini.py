@@ -112,7 +112,8 @@ if __name__ == '__main__':
     # filename = 'qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__quasarT-dev_1000.json'
     # filename = 'qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__triviaQA-dev_1000.json'
     # filename = 'qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__wikiQA-dev_1000.json'
-    filename = 'qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__squad-1000-formatted_1000.json'
+    # filename = 'qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__squad-1000-formatted_1000.json'
+    filename = 'qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__nq-1000-formatted_1000.json'
     qa_path = os.path.join(parent_folder, filename)
     res1 = evaluate_bertserini(qa_path, dnom=100, ranker_field='bm25_score')
     print(res1)

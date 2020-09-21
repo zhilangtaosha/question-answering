@@ -69,6 +69,8 @@ Abbreviation:
 | paragraph BM25 / electra-base-squad2                                 | 20              | 3.6                                 | ~~97.4~~            | 0.179     | 0.193     | 0.104     | 0.112     | 0.112     | 0.121     |
 | **Additional components**                                            |                 |                                     |                     |           |           |           |           |           |           |
 | FSP 100 + 50 stride BM25 / electra-base-squad2 + Scorer (mu = 0.988) | 20              | 2.1                                 | ~~99.3~~            | **0.200** | **0.215** | **0.111** | **0.119** | **0.123** | **0.132** |
+| FSP 100 + 50 stride BM25 / DPR (1000) / electra-base-squad2          | 20              | 28.8                                | 94.9                |    0.261  | **0.275** |   0.160   | **0.169** | NA        | NA        |
+| FSP 100 + 50 stride BM25 / DPR (1000) / electra-base-squad2 + Scorer (mu=0.55)| 20     | 28.8                                | 94.9                | **0.292** | NA        | **0.181** | NA        | NA        | NA        |
 
 
 

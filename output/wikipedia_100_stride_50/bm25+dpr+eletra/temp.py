@@ -1,7 +1,9 @@
 if __name__ == '__main__':
     import json
     import numpy as np
-    with open('qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__squad-1000-formatted_1000.json', 'r') as f:
+    filename = 'qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__squad-1000-formatted_1000.json'
+    filename = 'qa_BM25_wikipedia_100_stride_50__1000_DPR_20__electra-base-squad2__nq-1000-formatted_1000.json'
+    with open(filename, 'r') as f:
         items = json.load(f)
         print(len(items))
         count = 0
