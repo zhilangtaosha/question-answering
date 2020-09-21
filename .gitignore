@@ -134,9 +134,9 @@ dmypy.json
 # Others
 data/article_txt_got
 data/wikipedia
-models/roberta-base-squad2
-models/electra-base-squad2
-models/bert-base-uncased
+models/roberta*
+models/electra*
+models/bert*
 models/dpr
 haystack*/
 runs/output_para_embeddings
