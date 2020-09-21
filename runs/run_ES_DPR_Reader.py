@@ -249,14 +249,15 @@ def main():
 if __name__ == '__main__':
     main()
 
-    # import json
-    # with open('qa_BM25_DPR_electra-base-squad2_squad2-dev (932).json', 'r') as f:
-    #     obj = json.load(f)
-    #     print(len(obj))
+    # DATA_DIR = os.path.join('..', 'data')
+    # DATASETS = [
+    #     os.path.join(DATA_DIR, 'squad2', 'squad-1000.json'),
+    #     os.path.join(DATA_DIR, 'naturalQuestions', 'nq-1000.json'),
+    # ]
+    #
+    # items = load_json(os.path.join(DATA_DIR, 'naturalQuestions', 'nq-1000.json'))
+    # for i, item in enumerate(items):
+    #     item['question_id'] = 'qid_' + str(i)
+    # save_json(items, 'nq-1000-formatted.json')
 
-    # faiss_index = get_faiss_ip_index(d=3, use_gpu=USE_GPU)
-    # xb = np.random.random((10,3)).astype('float32')
-    # faiss_index.add(xb)
-    # print(faiss_index.ntotal)
-    # faiss_index.reset()
-    # print(faiss_index.ntotal)
+
