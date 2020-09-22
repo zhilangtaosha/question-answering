@@ -9,14 +9,6 @@ import plotly.express as px
 from pandas import DataFrame
 
 
-def normalize_min_max(min_val, max_val, val):
-    if max_val > min_val:
-        return (val - min_val) / (max_val - min_val)
-    elif max_val == min_val:
-        return 1
-    return None
-
-
 def bertserinize(top_docs, mu,
                  ranker_field,
                  reader_field='pred_answer_prob',

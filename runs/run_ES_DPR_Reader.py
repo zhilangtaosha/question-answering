@@ -1,5 +1,5 @@
 import os, sys, time
-import numpy as np
+from haystack.database.base import Document
 from tqdm import tqdm
 
 sys.path.insert(1, os.path.join('..', 'common'))
@@ -30,7 +30,7 @@ def get_output_filename(reader_path, data_path):
     return output_name + '.json'
 
 
-def find_doc_by_id(_docs, _id):
+def find_doc_by_id(_docs, _id) -> (Document, int):
     for i, d in enumerate(_docs):
         if d.id == _id:
             return d, i

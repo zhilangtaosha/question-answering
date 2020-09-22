@@ -99,3 +99,11 @@ def load_qa_data(data_path, seed=None, subset=None):
             subset_indices = np.random.choice(range(len(loaded_data)), subset, replace=False)
             loaded_data = [loaded_data[i] for i in subset_indices]
         return loaded_data
+
+
+def normalize_min_max(min_val, max_val, val):
+    if max_val > min_val:
+        return (val - min_val) / (max_val - min_val)
+    elif max_val == min_val:
+        return 1
+    return None
