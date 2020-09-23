@@ -1,6 +1,4 @@
-import os
-import sys
-import numpy as np
+import os, sys, time
 from haystack import Finder
 from haystack.database.base import Document
 from IPython.display import display, Markdown
