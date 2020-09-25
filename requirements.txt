@@ -4,3 +4,4 @@ wikiextractor
 ijson
 ipywidgets
 plotly
+tensorboard
