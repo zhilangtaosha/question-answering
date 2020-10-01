@@ -39,7 +39,7 @@ def parse(input_filename, output_filename):
 
         qas = []
         for qid in qa_dict:
-            qas.append(qa_dict[qid].json())
+            qas.append(qa_dict[qid].to_dict())
         with open(output_filename, 'w', encoding='utf8') as out:
             json.dump(qas, out, ensure_ascii=False)
         print('---------------------------------------')

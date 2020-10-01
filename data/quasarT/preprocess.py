@@ -27,7 +27,7 @@ def parse(input_filename, output_filename):
             question_id = obj['uid']
             item = DataItemQA(question_id, question)
             item.add_answer(answer)
-            items.append(item.json())
+            items.append(item.to_dict())
 
         with open(output_filename, 'w', encoding='utf8') as out:
             json.dump(items, out, ensure_ascii=False)

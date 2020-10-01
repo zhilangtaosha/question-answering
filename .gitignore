@@ -140,3 +140,4 @@ models/bert*
 models/dpr
 haystack*/
 runs/output_para_embeddings
+training/cache*

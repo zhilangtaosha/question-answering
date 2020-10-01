@@ -14,7 +14,8 @@ class DataItemQA:
     def __init__(self, question_id=None, question=None, **kwargs):
         self.question_id = question_id
         self.question = question
-        self.answers = set()
+        self.answers = []
+        self.answers_full = []
         for attr in kwargs.keys():
             self.__dict__[attr] = kwargs[attr]
 
@@ -24,17 +25,22 @@ class DataItemQA:
     def set_question(self, question):
         self.question = question
 
-    def add_answer(self, answer):
-        if answer:
-            self.answers.add(answer)
+    def add_answer(self, answer, start_position=None, end_position=None):
+        if answer and answer not in self.answers:
+            self.answers.append(answer)
+            if start_position is not None and end_position is not None:
+                self.answers_full.append({
+                    'text': answer,
+                    'start_position': start_position,
+                    'end_position': end_position
+                })
 
-    def json(self):
+    def to_dict(self):
         result = self.__dict__.copy()
-        result['answers'] = list(self.answers)
         return result
 
-    def json_string(self):
-        return json.dumps(self.json())
+    def to_json(self):
+        return json.dumps(self.to_dict())
 
 
 def save_json(obj_to_save, output_filename):
@@ -74,7 +80,7 @@ def stat_items(items: List, total_questions=None, total_answers=None) -> str:
             questions_with_answer.append(item)
     num_qs_w_ans = len(questions_with_answer)
     num_qs_w_ans_stat = 0 if num_qs_w_ans == 0 else num_qs_w_ans / len(items)
-    num_qs_w_ans_stat = f'({round(num_qs_w_ans_stat*100, 1)}%)'
+    num_qs_w_ans_stat = f'({round(num_qs_w_ans_stat * 100, 1)}%)'
     q_perc = '{:.1%}'.format(len(qs) / total_questions) if isinstance(total_questions, int) else None
     q_stat = f'{len(qs)} ({q_perc})' if q_perc is not None else f'{len(qs)}'
     s = f'##### Questions <{q_stat}>:\n'
@@ -92,10 +98,11 @@ def stat_items(items: List, total_questions=None, total_answers=None) -> str:
     return s
 
 
-def data_stats(parsed_data_path):
+def write_data_stats(parsed_data_path):
     s = ''
     with open(parsed_data_path, 'r', encoding='utf8') as f:
-        items = json.load(f)
+        obj = json.load(f)
+        items = obj if isinstance(obj, List) else obj['qas']
         q_dict = {
             'who': [],
             'what': [],
@@ -140,7 +147,7 @@ def data_stats(parsed_data_path):
             else:
                 q_dict['others'].append(item)
 
-    s += f'* Average Number of Answers per Question: {round(num_answers/num_questions, 1)}\n'
+    s += f'* Average Number of Answers per Question: {round(num_answers / num_questions, 1)}\n'
     s += stat_items(items)
     # 5Ws + 1H
     s += '### Who\n'
@@ -168,15 +175,16 @@ def data_stats(parsed_data_path):
 
 if __name__ == '__main__':
     data_paths = [
-        'narrativeQA/narrativeQA-dev.json',
-        'naturalQuestions/naturalQuestions-dev.json',
-        'naturalQuestions/naturalQuestions-dev-clean.json',
-        'quasarT/quasarT-dev.json',
-        'searchQA/searchQA-dev.json',
-        'squad2/squad2-dev.json',
-        'triviaQA/triviaQA-dev.json',
-        'wikiQA/wikiQA-dev.json',
-        'wikiQA/wikiQA-test.json'
+        # 'narrativeQA/narrativeQA-dev.json',
+        # 'naturalQuestions/naturalQuestions-dev.json',
+        # 'naturalQuestions/naturalQuestions-dev-clean.json',
+        # 'quasarT/quasarT-dev.json',
+        # 'searchQA/searchQA-dev.json',
+        # 'squad2/squad2-dev.json',
+        # 'triviaQA/triviaQA-dev.json',
+        # 'wikiQA/wikiQA-dev.json',
+        # 'wikiQA/wikiQA-test.json'
+        'squad1/squad1-dev.json',
     ]
     for p in tqdm(data_paths):
-        data_stats(p)
+        write_data_stats(p)

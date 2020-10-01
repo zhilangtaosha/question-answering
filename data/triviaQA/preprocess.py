@@ -55,7 +55,7 @@ def parse(input_filename, output_filename):
                     assert current_qa_item.question_id is None
                     current_qa_item.set_question_id(value)
             elif (prefix, event) == ('Data.item', 'end_map'):
-                result_s += current_qa_item.json_string()+',\n'
+                result_s += current_qa_item.to_json()+',\n'
 
         result_s = result_s[:-2]
         fw.write(result_s)

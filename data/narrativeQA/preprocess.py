@@ -32,7 +32,7 @@ def parse(input_filename):
                 item = DataItemQA(question_id, question)
                 item.add_answer(answer1)
                 item.add_answer(answer2)
-                obj = item.json()
+                obj = item.to_dict()
                 if which_set == 'test':
                     test_items.append(obj)
                 elif which_set == 'train':
